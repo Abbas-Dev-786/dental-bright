@@ -55,7 +55,7 @@ const AppointmentBooking = () => {
     const today = new Date();
     const workingHours = JSON.parse(dentist?.workingHours || "{}");
 
-    for (let i = -1; i <= 30; i++) {
+    for (let i = 0; i <= 30; i++) {
       const date = new Date(today);
       date?.setDate(today?.getDate() + i);
 

@@ -2,6 +2,18 @@ import React, { useState, useEffect } from "react";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
 
+const parseTime = (timeStr) => {
+  const [time, modifier] = timeStr.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+
+  if (modifier === "PM" && hours !== 12) hours += 12;
+  if (modifier === "AM" && hours === 12) hours = 0;
+
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
+};
+
 const TimeSlotPicker = ({
   selectedDate,
   selectedTime,
@@ -22,14 +34,12 @@ const TimeSlotPicker = ({
     const workingHoursForDay = workingHours[day] || {};
 
     // generate 30 mins slots from start to end
-    const start = workingHoursForDay.start || "09:00";
-    const end = workingHoursForDay.end || "17:00";
+    const start = workingHoursForDay.start || "09:00 AM";
+    const end = workingHoursForDay.end || "05:00 PM";
     const slots = [];
 
-    let current = new Date();
-    current.setHours(...start.split(":"));
-    const endTime = new Date();
-    endTime.setHours(...end.split(":"));
+    let current = parseTime(start);
+    const endTime = parseTime(end);
 
     while (current < endTime) {
       slots.push({
@@ -41,6 +51,15 @@ const TimeSlotPicker = ({
     }
 
     // classify them into morning, afternoon, and evening slots
+    while (current < endTime) {
+      slots.push({
+        time: current.toTimeString().slice(0, 5), // HH:MM 24-hour
+        available: true,
+        duration: 30,
+      });
+      current = new Date(current.getTime() + 30 * 60 * 1000); // add 30 mins
+    }
+
     const morningSlots = slots.filter((slot) => slot.time < "12:00");
     const afternoonSlots = slots.filter(
       (slot) => slot.time >= "12:00" && slot.time < "18:00"
@@ -54,9 +73,6 @@ const TimeSlotPicker = ({
     };
   };
 
-  // Mock time slots data
-  const mockTimeSlots = generateTimeSlots();
-
   useEffect(() => {
     if (selectedDate) {
       loadAvailableSlots();
@@ -69,11 +85,7 @@ const TimeSlotPicker = ({
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // Filter slots based on appointment type
-    let slots = { ...mockTimeSlots };
-    if (appointmentType === "emergency") {
-      // Emergency appointments might have different availability
-      slots.morning = slots?.morning?.filter((slot) => slot?.time >= "10:00");
-    }
+    let slots = generateTimeSlots();
 
     setAvailableSlots(slots);
     setIsLoading(false);
