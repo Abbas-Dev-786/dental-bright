@@ -26,7 +26,7 @@ export default async ({ req, res, log, error }) => {
     return res.text("Pong");
   }
 
-  const data = JSON.parse(req.bodyRaw);
+  const data = JSON.parse(req?.bodyRaw || "{}");
 
   return res.json({
     motto: "Build like a team of hundreds_",
