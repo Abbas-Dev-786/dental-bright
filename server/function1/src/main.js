@@ -86,9 +86,9 @@ export default async ({ req, res, log, error }) => {
           "conversation_config_override": {
             "agent": {
               "first_message": callMessage,
-              "prompt": {
-                "prompt":"You are just a appointment confirmation agent. After informing the user about their appointment details, please ask if they have any questions or need to reschedule. If nothing is there then please end the call politely."
-              }
+              // "prompt": {
+              //   "prompt":"You are just a appointment confirmation agent. After informing the user about their appointment details, please ask if they have any questions or need to reschedule. If nothing is there then please end the call politely."
+              // }
             }
           }
         }
