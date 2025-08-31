@@ -43,6 +43,8 @@ export const createBooking = async ({
 
   if (user.total === 0) {
     user = await createUser({ name, phone, email });
+  } else {
+    user = user.documents[0];
   }
 
   const appointment = await databases.createDocument(
