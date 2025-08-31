@@ -10,9 +10,14 @@ export default async ({ req, res, log, error }) => {
 
     const databases = new Databases(client);
 
-    // Parse webhook payload
-    const payload = JSON.parse(req.body);
+    // Get webhook payload (already parsed as object)
+    const payload = req.body;
     log('Webhook payload:', JSON.stringify(payload));
+
+    // Validate payload structure
+    if (!payload.events || !payload.events[0] || !payload.events[0].data) {
+      throw new Error('Invalid webhook payload structure');
+    }
 
     // Extract appointment data from webhook
     const appointmentData = payload.events[0].data;
@@ -21,6 +26,10 @@ export default async ({ req, res, log, error }) => {
     const dentistId = appointmentData.dentistId; // Adjust field name as per your schema
     const appointmentDate = appointmentData.start_date; // Adjust field name as per your schema
    
+    // Validate required fields
+    if (!appointmentId || !userId || !dentistId || !appointmentDate) {
+      throw new Error('Missing required appointment data fields');
+    }
 
     log(`Processing appointment: ${appointmentId} for user: ${userId}`);
 
@@ -49,10 +58,16 @@ export default async ({ req, res, log, error }) => {
       throw new Error(`No phone number found for user: ${userId}`);
     }
 
-  log(`Calling user: ${userName} at ${userPhone} for appointment with Dr. ${dentistName}`);
+    log(`Calling user: ${userName} at ${userPhone} for appointment with Dr. ${dentistName}`);
 
-  // Format appointment date and time
-  const appointmentDateTime = new Date(`${appointmentDate}`);
+    // Format appointment date and time
+    const appointmentDateTime = new Date(`${appointmentDate}`);
+    
+    // Validate date
+    if (isNaN(appointmentDateTime.getTime())) {
+      throw new Error(`Invalid appointment date: ${appointmentDate}`);
+    }
+    
     const formattedDate = appointmentDateTime.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -68,8 +83,8 @@ export default async ({ req, res, log, error }) => {
     // Create call message
     const callMessage = `Hello ${userName}, this is a confirmation call regarding your dental appointment with Dr. ${dentistName} at ${clinicName} scheduled for ${formattedDate} at ${formattedTime}. Please confirm your attendance or call us if you need to reschedule. Thank you!`;
 
-    // Make Twilio API call
-    const twilioResponse = await fetch(`https://api.elevenlabs.io/v1/convai/twilio/outbound-call`, {
+    // Make ElevenLabs API call
+    const elevenLabsResponse = await fetch(`https://api.elevenlabs.io/v1/convai/twilio/outbound-call`, {
       method: 'POST',
       headers: {
         "xi-api-key": process.env.ELEVEN_LABS_API_KEY,
@@ -89,19 +104,19 @@ export default async ({ req, res, log, error }) => {
       })
     });
 
-    const twilioResult = await twilioResponse.json();
+    const elevenLabsResult = await elevenLabsResponse.json();
 
-    if (!twilioResponse.ok) {
-      throw new Error(`Twilio API error: ${twilioResult.message}`);
+    if (!elevenLabsResponse.ok) {
+      throw new Error(`ElevenLabs API error: ${elevenLabsResult.message || 'Unknown error'}`);
     }
 
-    log(`Call initiated successfully. Call SID: ${twilioResult.sid}`);
+    log(`Call initiated successfully. Call ID: ${elevenLabsResult.call_id || 'N/A'}`);
 
     return res.json({
       success: true,
       message: 'Appointment reminder call initiated successfully',
       appointmentId: appointmentId,
-      callSid: twilioResult.sid,
+      callId: elevenLabsResult.call_id,
       userPhone: userPhone
     });
 
@@ -126,9 +141,7 @@ Environment Variables Required:
 - USERS_COLLECTION_ID
 - APPOINTMENTS_COLLECTION_ID
 - DENTISTS_COLLECTION_ID
-- TWILIO_ACCOUNT_SID
-- TWILIO_AUTH_TOKEN
-- TWILIO_PHONE_NUMBER
+- ELEVEN_LABS_API_KEY
 
 Webhook Configuration:
 - Set webhook to trigger on database.documents.create
@@ -136,9 +149,9 @@ Webhook Configuration:
 - Make sure the webhook is active
 
 Database Schema Assumptions:
-Users table fields: phoneNumber, name
-Appointments table fields: userId, dentistId, appointmentDate, appointmentTime
-Dentists table fields: name, clinicName
+Users table fields: phone, full_name
+Appointments table fields: users, dentistId, start_date
+Dentists table fields: name
 
 Adjust field names in the code to match your actual database schema.
 */
