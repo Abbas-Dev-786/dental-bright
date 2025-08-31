@@ -77,11 +77,11 @@ const CalendarComponent = ({
   };
 
   const navigateMonth = (direction) => {
-    setCurrentMonth((prev) => {
-      const newMonth = new Date(prev);
-      newMonth?.setMonth(prev?.getMonth() + direction);
-      return newMonth;
-    });
+    const newMonth = new Date(currentMonth);
+    newMonth.setDate(1);
+    newMonth?.setMonth(newMonth?.getMonth() + direction);
+
+    setCurrentMonth(newMonth);
   };
 
   const canNavigatePrevious = () => {
