@@ -25,6 +25,11 @@ export default async ({ req, res, log, error }) => {
     const userId = appointmentData.users; // Adjust field name as per your schema
     const dentistId = appointmentData.dentistId; // Adjust field name as per your schema
     const appointmentDate = appointmentData.start_date; // Adjust field name as per your schema
+
+    if(appointmentData.isBookedByCall){
+      res.send("No need to send confirmation call");
+      return;
+    }
    
     // Validate required fields
     if (!appointmentId || !userId || !dentistId || !appointmentDate) {
