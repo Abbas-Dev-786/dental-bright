@@ -39,7 +39,7 @@ export const createBooking = async ({
   endDate,
   notes,
 }) => {
-  const user = await getUser({ name, phone });
+  let user = await getUser({ name, phone });
 
   if (user.total === 0) {
     user = await createUser({ name, phone, email });
