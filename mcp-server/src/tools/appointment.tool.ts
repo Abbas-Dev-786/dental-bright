@@ -15,6 +15,8 @@ import {
   getAppointmentsOfDay,
 } from "../services/appointment.service";
 import { searchDentist } from "../services/dentist.service";
+import { databases } from "../config/appwrite.config";
+import { APPOINTMENTS_COLLECTION, DB_ID } from "../config/constants";
 
 config();
 
