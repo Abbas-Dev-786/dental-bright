@@ -11,19 +11,13 @@ export default async ({ req, res, log, error }) => {
     const databases = new Databases(client);
 
     // Get webhook payload (already parsed as object)
-    const payload = req.body;
+    const appointmentData = req.body;
     log('Webhook payload:', JSON.stringify(payload));
 
-    // Validate payload structure
-    if (!payload.events || !payload.events[0] || !payload.events[0].data) {
-      throw new Error('Invalid webhook payload structure');
-    }
 
-    // Extract appointment data from webhook
-    const appointmentData = payload.events[0].data;
     const appointmentId = appointmentData.$id;
-    const userId = appointmentData.users; // Adjust field name as per your schema
-    const dentistId = appointmentData.dentistId; // Adjust field name as per your schema
+    const user = appointmentData.users; // Adjust field name as per your schema
+    const dentist = appointmentData.dentists; // Adjust field name as per your schema
     const appointmentDate = appointmentData.start_date; // Adjust field name as per your schema
 
     if(appointmentData.isBookedByCall){
@@ -32,25 +26,11 @@ export default async ({ req, res, log, error }) => {
     }
    
     // Validate required fields
-    if (!appointmentId || !userId || !dentistId || !appointmentDate) {
+    if (!appointmentId || !user || !dentist|| !appointmentDate) {
       throw new Error('Missing required appointment data fields');
     }
 
-    log(`Processing appointment: ${appointmentId} for user: ${userId}`);
-
-    // Fetch user details
-    const user = await databases.getDocument(
-      process.env.DATABASE_ID,
-      process.env.USERS_COLLECTION_ID,
-      userId
-    );
-
-    // Fetch dentist details
-    const dentist = await databases.getDocument(
-      process.env.DATABASE_ID,
-      process.env.DENTISTS_COLLECTION_ID,
-      dentistId
-    );
+    log(`Processing appointment: ${appointmentId} for user: ${user.$id}`);
 
     // Extract necessary information
     const userPhone = user.phone; // Adjust field name as per your schema
