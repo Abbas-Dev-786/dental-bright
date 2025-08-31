@@ -14,9 +14,11 @@ export default async ({ req, res, log, error }) => {
     const appointmentData = req.body;
     log('Webhook payload:', JSON.stringify(appointmentData));
 
+    const appointmentfromDB = await databases.getDocument(process.env.DATABASE_ID, process.env.APPOINTMENTS_COLLECTION, appointmentData.$id);
+    log('Appointment from DB:', JSON.stringify(appointmentfromDB));
 
     const appointmentId = appointmentData.$id;
-    const user = appointmentData.users; // Adjust field name as per your schema
+    const user = await databases.getDocument(process.env.DATABASE_ID, process.env.USERS_COLLECTION_ID, appointmentData.users); // Adjust field name as per your schema
     const dentist = appointmentData.dentists; // Adjust field name as per your schema
     const appointmentDate = appointmentData.start_date; // Adjust field name as per your schema
 
@@ -144,3 +146,4 @@ Dentists table fields: name
 
 Adjust field names in the code to match your actual database schema.
 */
+
