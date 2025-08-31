@@ -1,13 +1,16 @@
 {
-  "name": "function1",
+  "name": "starter-template",
   "version": "1.0.0",
-  "main": "main.js",
+  "description": "",
+  "main": "src/main.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "format": "prettier --write ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "dependencies": {
+    "node-appwrite": "^14.1.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  }
 }
