@@ -27,6 +27,10 @@ export default async ({ req, res, log, error }) => {
    
     // Validate required fields
     if (!appointmentId || !user || !dentist|| !appointmentDate) {
+      log("Appointment Id", appointmentId)
+      log("User", user)
+      log("Dentist", dentist)
+      log("Appointment Date", appointmentDate)  
       throw new Error('Missing required appointment data fields');
     }
 
