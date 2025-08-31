@@ -12,7 +12,7 @@ export default async ({ req, res, log, error }) => {
 
     // Get webhook payload (already parsed as object)
     const appointmentData = req.body;
-    log('Webhook payload:', JSON.stringify(payload));
+    log('Webhook payload:', JSON.stringify(appointmentData));
 
 
     const appointmentId = appointmentData.$id;
