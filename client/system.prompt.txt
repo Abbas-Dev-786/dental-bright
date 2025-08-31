@@ -52,3 +52,68 @@ You have access to the following tools:
 * `checkDoctorAvailability`: Use this tool to view available appointment slots.
 * `bookAppointment`: Use this tool to book appointments and access patient information.
 * `checkAppointment`: Use this tool to to check if the date is available for the appointment or not
+
+
+
+
+
+
+const data = {
+  dentistId: "68b042732d9709072154",
+  start_date: "2025-09-02T22:30:00.000+00:00",
+  end_date: "2025-09-02T23:00:00.000+00:00",
+  notes: "",
+  status: "scheduled",
+  isBookedByCall: false,
+  $id: "68b464ab00376722193e",
+  $permissions: ['update("any")', 'delete("any")'],
+  $createdAt: "2025-08-31T15:05:16.320+00:00",
+  $updatedAt: "2025-08-31T15:05:16.320+00:00",
+  $sequence: 22,
+  users: {
+    full_name: "test test",
+    email: "test@gmail.com",
+    phone: "78237827837",
+    role: "patient",
+    $sequence: 30,
+    $id: "68b464ab000f9b890f0b",
+    $createdAt: "2025-08-31T15:05:15.684+00:00",
+    $updatedAt: "2025-08-31T15:05:15.684+00:00",
+    $permissions: ['update("any")', 'delete("any")'],
+    $databaseId: "68aaba340019ad058283",
+    $collectionId: "68aaba470039e5901c8d",
+  },
+  dentists: {
+    specialization: "General Dentistry",
+    experience: 12,
+    photo:
+      "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=400&fit=crop&crop=face",
+    priceRange: "150-300",
+    about:
+      "Dr. Sarah Johnson is a highly experienced general dentist with over 12 years of practice. She specializes in preventive care, cosmetic dentistry, and restorative procedures. Dr. Johnson is committed to providing gentle, comprehensive dental care in a comfortable environment.",
+    services: [
+      "Routine Cleanings",
+      "Dental Fillings",
+      "Teeth Whitening",
+      "Crowns & Bridges",
+      "Root Canal Therapy",
+      "Dental Implants",
+    ],
+    education: [
+      "Doctor of Dental Surgery (DDS) - Harvard School of Dental Medicine - 2012",
+      "Bachelor of Science in Biology - Stanford University - 2008",
+    ],
+    workingHours:
+      '{"monday":{"start":"9:00 AM","end":"6:00 PM"},"tuesday":{"start":"9:00 AM","end":"6:00 PM"},"wednesday":{"start":"9:00 AM","end":"6:00 PM"},"thursday":{"start":"9:00 AM","end":"6:00 PM"},"friday":{"start":"9:00 AM","end":"5:00 PM"},"saturday":{"start":"9:00 AM","end":"2:00 PM"}}',
+    name: "Sarah Johnson",
+    $sequence: 2,
+    $id: "68b042732d9709072154",
+    $createdAt: "2025-08-28T11:50:11.190+00:00",
+    $updatedAt: "2025-08-28T12:37:33.237+00:00",
+    $permissions: [],
+    $databaseId: "68aaba340019ad058283",
+    $collectionId: "68aabbe900252b7002b1",
+  },
+  $databaseId: "68aaba340019ad058283",
+  $collectionId: "68aabf0d003d425b2d36",
+};

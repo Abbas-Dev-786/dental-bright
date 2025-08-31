@@ -11,6 +11,7 @@ import AvailabilityManagement from "./pages/availability-management";
 import DentistSelection from "./pages/dentist-selection";
 import DentistDashboard from "./pages/dentist-dashboard";
 import CallMe from "pages/call-me";
+import BookingSuccess from "pages/booking-success";
 
 const Routes = () => {
   return (
@@ -30,6 +31,10 @@ const Routes = () => {
             <Route
               path="/availability-management"
               element={<AvailabilityManagement />}
+            />
+             <Route
+              path="/booking-success"
+              element={<BookingSuccess />}
             />
             <Route path="/dentist-selection" element={<DentistSelection />} />
             <Route path="/dentist-dashboard" element={<DentistDashboard />} />

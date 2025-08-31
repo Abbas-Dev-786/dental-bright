@@ -28,8 +28,21 @@ const AppointmentBooking = () => {
 
   const { mutate: bookAppointment } = useMutation({
     mutationFn: createBooking,
-    onSuccess() {
+    onSuccess(data) {
       console.log("Booking created successfully");
+      navigate("/booking-success", {
+        state: {
+          bookingData: {
+            appointmentDate: new Date(data.start_date).toLocaleDateString(),
+            appointmentTime: new Date(data.start_date).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            dentistName: data.dentists.name,
+            serviceName: data.dentists.services[0],
+          },
+        },
+      });
     },
     onError(error) {
       console.error("Error creating booking:", error);
@@ -129,6 +142,7 @@ const AppointmentBooking = () => {
       startDate: startUtc,
       endDate: endUtc,
       notes,
+      dentistId: id,
     });
 
     // Navigate to confirmation with booking data
