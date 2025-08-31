@@ -76,8 +76,8 @@ export default async ({ req, res, log, error }) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "agent_id": "string",
-        "agent_phone_number_id": "string",
+        "agent_id": "agent_9801k3mxk6jyecyr4q8h8t3x5ccv",
+        "agent_phone_number_id": "phnum_9101k3n1v1cbfk3r7myrhms5f8ap",
         "to_number": userPhone,
         "conversation_initiation_client_data": {
           "conversation_config_override": {
