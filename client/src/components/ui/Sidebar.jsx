@@ -24,52 +24,34 @@ const Sidebar = ({
       icon: "LayoutDashboard",
       description: "Overview and analytics",
     },
-    {
-      label: "Appointments",
-      path: "/appointments",
-      icon: "Calendar",
-      description: "Manage appointments",
-    },
-    {
-      label: "Availability",
-      path: "/availability-management",
-      icon: "Clock",
-      description: "Set working hours",
-    },
-    {
-      label: "Patients",
-      path: "/patients",
-      icon: "Users",
-      description: "Patient records",
-    },
-    {
-      label: "Treatments",
-      path: "/treatments",
-      icon: "Activity",
-      description: "Treatment plans",
-    },
-    {
-      label: "Reports",
-      path: "/reports",
-      icon: "BarChart3",
-      description: "Analytics & reports",
-    },
+    // {
+    //   label: "Appointments",
+    //   path: "/appointments",
+    //   icon: "Calendar",
+    //   description: "Manage appointments",
+    // },
+    // {
+    //   label: "Availability",
+    //   path: "/availability-management",
+    //   icon: "Clock",
+    //   description: "Set working hours",
+    // },
   ];
 
   // Secondary navigation items
   const secondaryNavItems = [
-    {
-      label: "Settings",
-      path: "/settings",
-      icon: "Settings",
-      description: "Account settings",
-    },
-    {
-      label: "Help & Support",
-      path: "/help",
-      icon: "HelpCircle",
-      description: "Get assistance",
-    },
+    // {
+    //   label: "Settings",
+    //   path: "/settings",
+    //   icon: "Settings",
+    //   description: "Account settings",
+    // },
+    // {
+    //   label: "Help & Support",
+    //   path: "/help",
+    //   icon: "HelpCircle",
+    //   description: "Get assistance",
+    // },
   ];
 
   const Logo = () => (
@@ -196,7 +178,7 @@ const Sidebar = ({
           </div>
 
           {/* Divider */}
-          <div className="my-6 mx-4 border-t border-border" />
+          {/* <div className="my-6 mx-4 border-t border-border" /> */}
 
           {/* Secondary Navigation */}
           <div className="space-y-1">

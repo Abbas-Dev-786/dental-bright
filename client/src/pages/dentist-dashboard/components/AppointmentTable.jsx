@@ -1,49 +1,59 @@
-import React, { useState } from 'react';
-import Icon from '../../../components/AppIcon';
-import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
-import Select from '../../../components/ui/Select';
+import React, { useState } from "react";
+import Icon from "../../../components/AppIcon";
+import Button from "../../../components/ui/Button";
+import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
 
-const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onViewPatient }) => {
-  const [sortField, setSortField] = useState('date');
-  const [sortDirection, setSortDirection] = useState('asc');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+const AppointmentTable = ({
+  appointments,
+  onConfirm,
+  onReschedule,
+  onCancel,
+  onViewPatient,
+}) => {
+  const [sortField, setSortField] = useState("date");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedAppointments, setSelectedAppointments] = useState([]);
 
   const statusOptions = [
-    { value: 'all', label: 'All Status' },
-    { value: 'confirmed', label: 'Confirmed' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'cancelled', label: 'Cancelled' },
-    { value: 'completed', label: 'Completed' }
+    { value: "all", label: "All Status" },
+    { value: "confirmed", label: "Confirmed" },
+    { value: "pending", label: "Pending" },
+    { value: "cancelled", label: "Cancelled" },
+    { value: "completed", label: "Completed" },
   ];
 
   const handleSort = (field) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
-  const filteredAppointments = appointments?.filter(apt => {
-      const matchesStatus = filterStatus === 'all' || apt?.status === filterStatus;
-      const matchesSearch = apt?.patientName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
-                           apt?.phone?.includes(searchTerm) ||
-                           apt?.type?.toLowerCase()?.includes(searchTerm?.toLowerCase());
+  const filteredAppointments = appointments
+    ?.filter((apt) => {
+      const matchesStatus =
+        filterStatus === "all" || apt?.status === filterStatus;
+      const matchesSearch =
+        apt?.patientName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        apt?.phone?.includes(searchTerm) ||
+        apt?.type?.toLowerCase()?.includes(searchTerm?.toLowerCase());
       return matchesStatus && matchesSearch;
-    })?.sort((a, b) => {
+    })
+    ?.sort((a, b) => {
       let aValue = a?.[sortField];
       let bValue = b?.[sortField];
-      
-      if (sortField === 'date') {
-        aValue = new Date(a.date + ' ' + a.time);
-        bValue = new Date(b.date + ' ' + b.time);
+
+      if (sortField === "date") {
+        aValue = new Date(a.date + " " + a.time);
+        bValue = new Date(b.date + " " + b.time);
       }
-      
-      if (sortDirection === 'asc') {
+
+      if (sortDirection === "asc") {
         return aValue > bValue ? 1 : -1;
       } else {
         return aValue < bValue ? 1 : -1;
@@ -52,7 +62,7 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
 
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedAppointments(filteredAppointments?.map(apt => apt?.id));
+      setSelectedAppointments(filteredAppointments?.map((apt) => apt?.id));
     } else {
       setSelectedAppointments([]);
     }
@@ -62,22 +72,24 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
     if (checked) {
       setSelectedAppointments([...selectedAppointments, appointmentId]);
     } else {
-      setSelectedAppointments(selectedAppointments?.filter(id => id !== appointmentId));
+      setSelectedAppointments(
+        selectedAppointments?.filter((id) => id !== appointmentId)
+      );
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'confirmed':
-        return 'bg-success/10 text-success border-success/20';
-      case 'pending':
-        return 'bg-warning/10 text-warning border-warning/20';
-      case 'cancelled':
-        return 'bg-error/10 text-error border-error/20';
-      case 'completed':
-        return 'bg-muted/10 text-muted-foreground border-muted/20';
+      case "confirmed":
+        return "bg-success/10 text-success border-success/20";
+      case "pending":
+        return "bg-warning/10 text-warning border-warning/20";
+      case "cancelled":
+        return "bg-error/10 text-error border-error/20";
+      case "completed":
+        return "bg-muted/10 text-muted-foreground border-muted/20";
       default:
-        return 'bg-muted/10 text-muted-foreground border-muted/20';
+        return "bg-muted/10 text-muted-foreground border-muted/20";
     }
   };
 
@@ -88,9 +100,9 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
     >
       <span>{children}</span>
       {sortField === field && (
-        <Icon 
-          name={sortDirection === 'asc' ? 'ChevronUp' : 'ChevronDown'} 
-          size={16} 
+        <Icon
+          name={sortDirection === "asc" ? "ChevronUp" : "ChevronDown"}
+          size={16}
           className="text-primary"
         />
       )}
@@ -101,8 +113,10 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
     <div className="bg-card border border-border rounded-lg shadow-card">
       <div className="p-6 border-b border-border">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-          <h2 className="text-xl font-semibold text-foreground">All Appointments</h2>
-          
+          <h2 className="text-xl font-semibold text-foreground">
+            All Appointments
+          </h2>
+
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
             <Input
               type="search"
@@ -111,7 +125,7 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
               onChange={(e) => setSearchTerm(e?.target?.value)}
               className="w-full sm:w-64"
             />
-            
+
             <Select
               options={statusOptions}
               value={filterStatus}
@@ -129,7 +143,12 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
                 {selectedAppointments?.length} appointment(s) selected
               </span>
               <div className="flex space-x-2">
-                <Button variant="outline" size="sm" iconName="Calendar" iconSize={14}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  iconName="Calendar"
+                  iconSize={14}
+                >
                   Bulk Reschedule
                 </Button>
                 <Button variant="outline" size="sm" iconName="X" iconSize={14}>
@@ -147,7 +166,11 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
               <th className="px-6 py-3 text-left">
                 <input
                   type="checkbox"
-                  checked={selectedAppointments?.length === filteredAppointments?.length && filteredAppointments?.length > 0}
+                  checked={
+                    selectedAppointments?.length ===
+                      filteredAppointments?.length &&
+                    filteredAppointments?.length > 0
+                  }
                   onChange={(e) => handleSelectAll(e?.target?.checked)}
                   className="rounded border-border"
                 />
@@ -168,24 +191,36 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
                 <SortButton field="status">Status</SortButton>
               </th>
               <th className="px-6 py-3 text-left">Notes</th>
-              <th className="px-6 py-3 text-right">Actions</th>
+              {/* <th className="px-6 py-3 text-right">Actions</th> */}
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {filteredAppointments?.map((appointment) => (
-              <tr key={appointment?.id} className="hover:bg-muted/30 transition-colors duration-200">
+              <tr
+                key={appointment?.id}
+                className="hover:bg-muted/30 transition-colors duration-200"
+              >
                 <td className="px-6 py-4">
                   <input
                     type="checkbox"
                     checked={selectedAppointments?.includes(appointment?.id)}
-                    onChange={(e) => handleSelectAppointment(appointment?.id, e?.target?.checked)}
+                    onChange={(e) =>
+                      handleSelectAppointment(
+                        appointment?.id,
+                        e?.target?.checked
+                      )
+                    }
                     className="rounded border-border"
                   />
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
-                    <span className="font-medium text-foreground">{appointment?.date}</span>
-                    <span className="text-sm text-muted-foreground">{appointment?.time}</span>
+                    <span className="font-medium text-foreground">
+                      {appointment?.date}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {appointment?.time}
+                    </span>
                   </div>
                 </td>
                 <td className="px-6 py-4">
@@ -196,24 +231,37 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
                     >
                       {appointment?.patientName}
                     </button>
-                    <span className="text-sm text-muted-foreground">{appointment?.phone}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {appointment?.phone}
+                    </span>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="capitalize text-foreground">{appointment?.type}</span>
+                  <span className="capitalize text-foreground">
+                    {appointment?.type}
+                  </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="text-foreground">{appointment?.duration}</span>
+                  <span className="text-foreground">
+                    {appointment?.duration}
+                  </span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(appointment?.status)}`}>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                      appointment?.status
+                    )}`}
+                  >
                     {appointment?.status}
                   </span>
                 </td>
                 <td className="px-6 py-4">
                   <div className="max-w-32">
                     {appointment?.notes ? (
-                      <p className="text-sm text-muted-foreground truncate" title={appointment?.notes}>
+                      <p
+                        className="text-sm text-muted-foreground truncate"
+                        title={appointment?.notes}
+                      >
                         {appointment?.notes}
                       </p>
                     ) : (
@@ -221,7 +269,7 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4">
+                {/* <td className="px-6 py-4">
                   <div className="flex items-center justify-end space-x-2">
                     {appointment?.status === 'pending' && (
                       <Button
@@ -251,7 +299,7 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
                       className="text-error hover:text-error"
                     />
                   </div>
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>
@@ -259,8 +307,14 @@ const AppointmentTable = ({ appointments, onConfirm, onReschedule, onCancel, onV
       </div>
       {filteredAppointments?.length === 0 && (
         <div className="text-center py-8">
-          <Icon name="Search" size={48} className="mx-auto text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">No appointments found matching your criteria</p>
+          <Icon
+            name="Search"
+            size={48}
+            className="mx-auto text-muted-foreground mb-4"
+          />
+          <p className="text-muted-foreground">
+            No appointments found matching your criteria
+          </p>
         </div>
       )}
     </div>

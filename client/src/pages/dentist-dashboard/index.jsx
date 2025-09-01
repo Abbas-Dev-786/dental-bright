@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Header from '../../components/ui/Header';
-import Sidebar from '../../components/ui/Sidebar';
-import BreadcrumbTrail from '../../components/ui/BreadcrumbTrail';
-import StatsCard from './components/StatsCard';
-import TodaySchedule from './components/TodaySchedule';
-import AppointmentTable from './components/AppointmentTable';
-import CalendarView from './components/CalendarView';
-import NotificationCenter from './components/NotificationCenter';
-import PatientModal from './components/PatientModal';
-import Button from '../../components/ui/Button';
-
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Header from "../../components/ui/Header";
+import Sidebar from "../../components/ui/Sidebar";
+import BreadcrumbTrail from "../../components/ui/BreadcrumbTrail";
+import StatsCard from "./components/StatsCard";
+import TodaySchedule from "./components/TodaySchedule";
+import AppointmentTable from "./components/AppointmentTable";
+import CalendarView from "./components/CalendarView";
+import NotificationCenter from "./components/NotificationCenter";
+import PatientModal from "./components/PatientModal";
+import Button from "../../components/ui/Button";
 
 const DentistDashboard = () => {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const DentistDashboard = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
-  const [activeView, setActiveView] = useState('overview');
+  const [activeView, setActiveView] = useState("overview");
 
   // Mock data for today's appointments
   const todayAppointments = [
@@ -30,7 +29,8 @@ const DentistDashboard = () => {
       time: "9:00 AM",
       type: "cleaning",
       status: "confirmed",
-      notes: "Regular cleaning and checkup. Patient has been experiencing slight sensitivity."
+      notes:
+        "Regular cleaning and checkup. Patient has been experiencing slight sensitivity.",
     },
     {
       id: 2,
@@ -40,7 +40,7 @@ const DentistDashboard = () => {
       time: "10:30 AM",
       type: "checkup",
       status: "pending",
-      notes: "Follow-up appointment for cavity treatment."
+      notes: "Follow-up appointment for cavity treatment.",
     },
     {
       id: 3,
@@ -50,7 +50,7 @@ const DentistDashboard = () => {
       time: "2:00 PM",
       type: "filling",
       status: "confirmed",
-      notes: "Composite filling for upper left molar."
+      notes: "Composite filling for upper left molar.",
     },
     {
       id: 4,
@@ -60,13 +60,16 @@ const DentistDashboard = () => {
       time: "3:30 PM",
       type: "extraction",
       status: "pending",
-      notes: "Wisdom tooth extraction. Patient is anxious about the procedure."
-    }
+      notes: "Wisdom tooth extraction. Patient is anxious about the procedure.",
+    },
   ];
 
   // Mock data for all appointments
   const allAppointments = [
-    ...todayAppointments?.map(apt => ({ ...apt, date: new Date()?.toISOString()?.split('T')?.[0] })),
+    ...todayAppointments?.map((apt) => ({
+      ...apt,
+      date: new Date()?.toISOString()?.split("T")?.[0],
+    })),
     {
       id: 5,
       patientName: "Lisa Thompson",
@@ -77,7 +80,7 @@ const DentistDashboard = () => {
       type: "cleaning",
       status: "confirmed",
       duration: "60 min",
-      notes: "Regular cleaning appointment"
+      notes: "Regular cleaning appointment",
     },
     {
       id: 6,
@@ -89,7 +92,7 @@ const DentistDashboard = () => {
       type: "checkup",
       status: "pending",
       duration: "30 min",
-      notes: "Annual checkup"
+      notes: "Annual checkup",
     },
     {
       id: 7,
@@ -101,8 +104,8 @@ const DentistDashboard = () => {
       type: "filling",
       status: "confirmed",
       duration: "45 min",
-      notes: "Cavity filling on lower right side"
-    }
+      notes: "Cavity filling on lower right side",
+    },
   ];
 
   // Mock notifications data
@@ -111,52 +114,81 @@ const DentistDashboard = () => {
       id: 1,
       type: "appointment_request",
       title: "New Appointment Request",
-      message: "John Smith has requested an appointment for teeth cleaning on August 30th at 2:00 PM.",
+      message:
+        "John Smith has requested an appointment for teeth cleaning on August 30th at 2:00 PM.",
       timestamp: new Date(Date.now() - 300000),
       read: false,
       priority: "normal",
       actions: [
-        { label: "Accept", action: "accept", variant: "default", icon: "Check" },
-        { label: "Decline", action: "decline", variant: "outline", icon: "X" }
-      ]
+        {
+          label: "Accept",
+          action: "accept",
+          variant: "default",
+          icon: "Check",
+        },
+        { label: "Decline", action: "decline", variant: "outline", icon: "X" },
+      ],
     },
     {
       id: 2,
       type: "cancellation",
       title: "Appointment Cancelled",
-      message: "Maria Garcia has cancelled her appointment scheduled for today at 4:00 PM.",
+      message:
+        "Maria Garcia has cancelled her appointment scheduled for today at 4:00 PM.",
       timestamp: new Date(Date.now() - 900000),
       read: false,
       priority: "high",
       actions: [
-        { label: "Reschedule", action: "reschedule", variant: "outline", icon: "Calendar" }
-      ]
+        {
+          label: "Reschedule",
+          action: "reschedule",
+          variant: "outline",
+          icon: "Calendar",
+        },
+      ],
     },
     {
       id: 3,
       type: "reschedule",
       title: "Reschedule Request",
-      message: "Tom Wilson wants to reschedule his appointment from August 29th to August 31st.",
+      message:
+        "Tom Wilson wants to reschedule his appointment from August 29th to August 31st.",
       timestamp: new Date(Date.now() - 1800000),
       read: true,
       priority: "normal",
       actions: [
-        { label: "Approve", action: "approve", variant: "default", icon: "Check" },
-        { label: "Suggest Alternative", action: "suggest", variant: "outline", icon: "Calendar" }
-      ]
+        {
+          label: "Approve",
+          action: "approve",
+          variant: "default",
+          icon: "Check",
+        },
+        {
+          label: "Suggest Alternative",
+          action: "suggest",
+          variant: "outline",
+          icon: "Calendar",
+        },
+      ],
     },
     {
       id: 4,
       type: "message",
       title: "Patient Message",
-      message: "Anna Lee has sent a message regarding post-treatment care instructions.",
+      message:
+        "Anna Lee has sent a message regarding post-treatment care instructions.",
       timestamp: new Date(Date.now() - 3600000),
       read: true,
       priority: "normal",
       actions: [
-        { label: "Reply", action: "reply", variant: "outline", icon: "MessageCircle" }
-      ]
-    }
+        {
+          label: "Reply",
+          action: "reply",
+          variant: "outline",
+          icon: "MessageCircle",
+        },
+      ],
+    },
   ];
 
   // Mock patient data
@@ -172,7 +204,7 @@ const DentistDashboard = () => {
       allergies: ["Penicillin"],
       emergencyContact: {
         name: "John Johnson",
-        phone: "(555) 123-4568"
+        phone: "(555) 123-4568",
       },
       visitHistory: [
         {
@@ -182,7 +214,7 @@ const DentistDashboard = () => {
           status: "completed",
           duration: "60 min",
           cost: "150",
-          notes: "No issues found. Recommended regular flossing."
+          notes: "No issues found. Recommended regular flossing.",
         },
         {
           id: 2,
@@ -191,8 +223,8 @@ const DentistDashboard = () => {
           status: "completed",
           duration: "45 min",
           cost: "200",
-          notes: "Composite filling on upper right molar."
-        }
+          notes: "Composite filling on upper right molar.",
+        },
       ],
       treatments: [
         {
@@ -201,37 +233,40 @@ const DentistDashboard = () => {
           description: "Braces for teeth alignment",
           status: "in-progress",
           startDate: "2025-01-15",
-          endDate: null
-        }
+          endDate: null,
+        },
       ],
       notes: [
         {
           id: 1,
           date: "2025-08-27",
           author: "Sarah Smith",
-          content: "Patient reports sensitivity to cold. Recommended sensitive toothpaste."
-        }
-      ]
-    }
+          content:
+            "Patient reports sensitivity to cold. Recommended sensitive toothpaste.",
+        },
+      ],
+    },
   };
 
   // Stats data
   const statsData = [
     {
-      title: "Today\'s Appointments",
+      title: "Today's Appointments",
       value: todayAppointments?.length?.toString(),
       change: "+2 from yesterday",
       changeType: "positive",
       icon: "Calendar",
-      color: "primary"
+      color: "primary",
     },
     {
       title: "Pending Confirmations",
-      value: todayAppointments?.filter(apt => apt?.status === 'pending')?.length?.toString(),
+      value: todayAppointments
+        ?.filter((apt) => apt?.status === "pending")
+        ?.length?.toString(),
       change: "-1 from yesterday",
       changeType: "negative",
       icon: "Clock",
-      color: "warning"
+      color: "warning",
     },
     {
       title: "Total Patients",
@@ -239,7 +274,7 @@ const DentistDashboard = () => {
       change: "+12 this month",
       changeType: "positive",
       icon: "Users",
-      color: "success"
+      color: "success",
     },
     {
       title: "Revenue Today",
@@ -247,28 +282,28 @@ const DentistDashboard = () => {
       change: "+15% from avg",
       changeType: "positive",
       icon: "DollarSign",
-      color: "success"
-    }
+      color: "success",
+    },
   ];
 
   // Event handlers
   const handleConfirmAppointment = (appointmentId) => {
-    console.log('Confirming appointment:', appointmentId);
+    console.log("Confirming appointment:", appointmentId);
     // Implementation would update appointment status
   };
 
   const handleRescheduleAppointment = (appointmentId) => {
-    console.log('Rescheduling appointment:', appointmentId);
+    console.log("Rescheduling appointment:", appointmentId);
     // Implementation would open reschedule modal
   };
 
   const handleCancelAppointment = (appointmentId) => {
-    console.log('Cancelling appointment:', appointmentId);
+    console.log("Cancelling appointment:", appointmentId);
     // Implementation would cancel appointment
   };
 
   const handleAddNotes = (appointmentId) => {
-    console.log('Adding notes to appointment:', appointmentId);
+    console.log("Adding notes to appointment:", appointmentId);
     // Implementation would open notes modal
   };
 
@@ -282,26 +317,26 @@ const DentistDashboard = () => {
 
   const handleScheduleAppointment = (patientId) => {
     setShowPatientModal(false);
-    navigate('/appointment-booking', { state: { patientId } });
+    navigate("/appointment-booking", { state: { patientId } });
   };
 
   const handleMarkNotificationAsRead = (notificationId) => {
-    console.log('Marking notification as read:', notificationId);
+    console.log("Marking notification as read:", notificationId);
     // Implementation would update notification status
   };
 
   const handleMarkAllNotificationsAsRead = () => {
-    console.log('Marking all notifications as read');
+    console.log("Marking all notifications as read");
     // Implementation would update all notification statuses
   };
 
   const handleNotificationAction = (notificationId, action) => {
-    console.log('Notification action:', notificationId, action);
+    console.log("Notification action:", notificationId, action);
     // Implementation would handle specific notification actions
   };
 
   const handleLogout = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   const toggleSidebar = () => {
@@ -310,49 +345,63 @@ const DentistDashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* Header 
       <Header 
         isAuthenticated={true} 
         userRole="dentist" 
         onLogout={handleLogout}
-      />
+      />*/}
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar 
+        <Sidebar
           isCollapsed={sidebarCollapsed}
           onToggleCollapse={toggleSidebar}
           userRole="dentist"
         />
 
         {/* Main Content */}
-        <div className={`flex-1 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'} transition-all duration-300`}>
+        <div
+          className={`flex-1 ${
+            sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+          } transition-all duration-300`}
+        >
           {/* Breadcrumbs */}
-          <BreadcrumbTrail customBreadcrumbs={[
-            { label: 'Dashboard', href: '/dashboard' }
-          ]} />
+          <BreadcrumbTrail
+            customBreadcrumbs={[{ label: "Dashboard", href: "/dashboard" }]}
+          />
 
           <div className="p-6 space-y-6">
             {/* Welcome Section */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Welcome back, Dr. Smith</h1>
+                <h1 className="text-3xl font-bold text-foreground">
+                  Welcome back, Dr. Smith
+                </h1>
                 <p className="text-muted-foreground mt-1">
                   Here's what's happening with your practice today.
                 </p>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <Button
                   variant="outline"
-                  onClick={() => setActiveView(activeView === 'calendar' ? 'overview' : 'calendar')}
-                  iconName={activeView === 'calendar' ? 'LayoutDashboard' : 'Calendar'}
+                  onClick={() =>
+                    setActiveView(
+                      activeView === "calendar" ? "overview" : "calendar"
+                    )
+                  }
+                  iconName={
+                    activeView === "calendar" ? "LayoutDashboard" : "Calendar"
+                  }
                   iconSize={16}
                 >
-                  {activeView === 'calendar' ? 'Dashboard View' : 'Calendar View'}
+                  {activeView === "calendar"
+                    ? "Dashboard View"
+                    : "Calendar View"}
                 </Button>
                 <Button
                   variant="default"
-                  onClick={() => navigate('/appointment-booking')}
+                  onClick={() => navigate("/appointment-booking")}
                   iconName="Plus"
                   iconSize={16}
                 >
@@ -361,10 +410,10 @@ const DentistDashboard = () => {
               </div>
             </div>
 
-            {activeView === 'overview' ? (
+            {activeView === "overview" ? (
               <>
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {statsData?.map((stat, index) => (
                     <StatsCard
                       key={index}
@@ -376,7 +425,7 @@ const DentistDashboard = () => {
                       color={stat?.color}
                     />
                   ))}
-                </div>
+                </div> */}
 
                 {/* Today's Schedule */}
                 <TodaySchedule
@@ -388,7 +437,7 @@ const DentistDashboard = () => {
                 />
 
                 {/* Two Column Layout */}
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {/* Appointments Table */}
                   <div className="xl:col-span-2">
                     <AppointmentTable
@@ -401,23 +450,23 @@ const DentistDashboard = () => {
                   </div>
 
                   {/* Notifications */}
-                  <div className="xl:col-span-1">
+                  {/* <div className="xl:col-span-1">
                     <NotificationCenter
                       notifications={notifications}
                       onMarkAsRead={handleMarkNotificationAsRead}
                       onMarkAllAsRead={handleMarkAllNotificationsAsRead}
                       onAction={handleNotificationAction}
                     />
-                  </div>
+                  </div> */}
                 </div>
               </>
             ) : (
               /* Calendar View */
-              (<CalendarView
+              <CalendarView
                 appointments={allAppointments}
                 onDateSelect={setSelectedDate}
                 selectedDate={selectedDate}
-              />)
+              />
             )}
           </div>
         </div>

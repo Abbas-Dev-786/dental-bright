@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Icon from "../../../components/AppIcon";
 import Button from "../../../components/ui/Button";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getBookedAppointmentsOfTheDay } from "services/appointment.service";
 
 const parseTime = (timeStr) => {
   const [time, modifier] = timeStr.split(" ");
@@ -23,6 +26,14 @@ const TimeSlotPicker = ({
 }) => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { id } = useParams();
+  const { data, error } = useQuery({
+    queryKey: ["booked-slots", { date: selectedDate, dentistId: id }],
+    queryFn: getBookedAppointmentsOfTheDay,
+    enabled: Boolean(selectedDate) && Boolean(id),
+    select: (data) => data.documents,
+  });
 
   const generateTimeSlots = () => {
     const day = selectedDate
