@@ -108,89 +108,6 @@ const DentistDashboard = () => {
     },
   ];
 
-  // Mock notifications data
-  const notifications = [
-    {
-      id: 1,
-      type: "appointment_request",
-      title: "New Appointment Request",
-      message:
-        "John Smith has requested an appointment for teeth cleaning on August 30th at 2:00 PM.",
-      timestamp: new Date(Date.now() - 300000),
-      read: false,
-      priority: "normal",
-      actions: [
-        {
-          label: "Accept",
-          action: "accept",
-          variant: "default",
-          icon: "Check",
-        },
-        { label: "Decline", action: "decline", variant: "outline", icon: "X" },
-      ],
-    },
-    {
-      id: 2,
-      type: "cancellation",
-      title: "Appointment Cancelled",
-      message:
-        "Maria Garcia has cancelled her appointment scheduled for today at 4:00 PM.",
-      timestamp: new Date(Date.now() - 900000),
-      read: false,
-      priority: "high",
-      actions: [
-        {
-          label: "Reschedule",
-          action: "reschedule",
-          variant: "outline",
-          icon: "Calendar",
-        },
-      ],
-    },
-    {
-      id: 3,
-      type: "reschedule",
-      title: "Reschedule Request",
-      message:
-        "Tom Wilson wants to reschedule his appointment from August 29th to August 31st.",
-      timestamp: new Date(Date.now() - 1800000),
-      read: true,
-      priority: "normal",
-      actions: [
-        {
-          label: "Approve",
-          action: "approve",
-          variant: "default",
-          icon: "Check",
-        },
-        {
-          label: "Suggest Alternative",
-          action: "suggest",
-          variant: "outline",
-          icon: "Calendar",
-        },
-      ],
-    },
-    {
-      id: 4,
-      type: "message",
-      title: "Patient Message",
-      message:
-        "Anna Lee has sent a message regarding post-treatment care instructions.",
-      timestamp: new Date(Date.now() - 3600000),
-      read: true,
-      priority: "normal",
-      actions: [
-        {
-          label: "Reply",
-          action: "reply",
-          variant: "outline",
-          icon: "MessageCircle",
-        },
-      ],
-    },
-  ];
-
   // Mock patient data
   const patients = {
     P001: {
@@ -247,44 +164,6 @@ const DentistDashboard = () => {
       ],
     },
   };
-
-  // Stats data
-  const statsData = [
-    {
-      title: "Today's Appointments",
-      value: todayAppointments?.length?.toString(),
-      change: "+2 from yesterday",
-      changeType: "positive",
-      icon: "Calendar",
-      color: "primary",
-    },
-    {
-      title: "Pending Confirmations",
-      value: todayAppointments
-        ?.filter((apt) => apt?.status === "pending")
-        ?.length?.toString(),
-      change: "-1 from yesterday",
-      changeType: "negative",
-      icon: "Clock",
-      color: "warning",
-    },
-    {
-      title: "Total Patients",
-      value: "247",
-      change: "+12 this month",
-      changeType: "positive",
-      icon: "Users",
-      color: "success",
-    },
-    {
-      title: "Revenue Today",
-      value: "$1,250",
-      change: "+15% from avg",
-      changeType: "positive",
-      icon: "DollarSign",
-      color: "success",
-    },
-  ];
 
   // Event handlers
   const handleConfirmAppointment = (appointmentId) => {
@@ -375,7 +254,7 @@ const DentistDashboard = () => {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
-                  Welcome back, Dr. Smith
+                  Welcome back, Doctor
                 </h1>
                 <p className="text-muted-foreground mt-1">
                   Here's what's happening with your practice today.
@@ -399,14 +278,14 @@ const DentistDashboard = () => {
                     ? "Dashboard View"
                     : "Calendar View"}
                 </Button>
-                <Button
+                {/* <Button
                   variant="default"
                   onClick={() => navigate("/appointment-booking")}
                   iconName="Plus"
                   iconSize={16}
                 >
                   New Appointment
-                </Button>
+                </Button> */}
               </div>
             </div>
 

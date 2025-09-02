@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Icon from "../AppIcon";
 import Button from "./Button";
+import { useQuery } from "@tanstack/react-query";
+import { getAllDentists } from "services/dentist.service";
 
 const Sidebar = ({
   isCollapsed = false,
@@ -118,6 +120,26 @@ const Sidebar = ({
     );
   };
 
+  // Dummy doctors list (replace with real data as needed)
+  const {
+    data: doctors,
+    isLoading: loading,
+    isError,
+  } = useQuery({
+    queryKey: ["dentists"],
+    queryFn: getAllDentists,
+    select(data) {
+      return data.documents;
+    },
+  });
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (!doctors) return;
+    setSelectedDoctor(doctors?.[0]);
+  }, [doctors]);
+
   return (
     <div
       className={`lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:block ${
@@ -192,10 +214,50 @@ const Sidebar = ({
           </div>
         </nav>
 
-        {/* User Profile */}
+        {/* Doctor Dropdown */}
         <div className="border-t border-border p-4">
+          <div className={`flex flex-col ${isCollapsed ? "items-center" : ""}`}>
+            <div className="relative w-full">
+              <button
+                type="button"
+                className={`flex items-center justify-between w-full px-3 py-2 bg-muted rounded-md text-sm font-medium text-foreground focus:outline-none ${
+                  isCollapsed ? "justify-center" : ""
+                }`}
+                onClick={() => setDropdownOpen((open) => !open)}
+              >
+                <span>{selectedDoctor?.name || "Select Doctor"}</span>
+                <Icon
+                  name={dropdownOpen ? "ChevronUp" : "ChevronDown"}
+                  size={16}
+                />
+              </button>
+              {dropdownOpen && (
+                <div className="absolute left-0 right-0 mt-1 bg-card border border-border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+                  {doctors?.map((doc) => (
+                    <button
+                      key={doc.$id}
+                      type="button"
+                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted ${
+                        selectedDoctor?.$id === doc.$id
+                          ? "bg-primary text-primary-foreground"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setSelectedDoctor(doc);
+                        setDropdownOpen(false);
+                      }}
+                    >
+                      {doc.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* User Profile */}
           <div
-            className={`flex items-center space-x-3 ${
+            className={`flex items-center space-x-3 mt-4 ${
               isCollapsed ? "justify-center" : ""
             }`}
           >
@@ -205,7 +267,7 @@ const Sidebar = ({
             {!isCollapsed && (
               <div className="flex flex-col min-w-0">
                 <span className="text-sm font-medium text-foreground truncate">
-                  Dr. Sarah Smith
+                  {selectedDoctor?.name || "Doctor"}
                 </span>
                 <span className="text-xs text-muted-foreground truncate">
                   Dental Professional
@@ -214,7 +276,7 @@ const Sidebar = ({
             )}
           </div>
 
-          {!isCollapsed && (
+          {/* {!isCollapsed && (
             <div className="mt-3 flex space-x-2">
               <Button variant="ghost" size="sm" className="flex-1">
                 <Icon name="Settings" size={14} />
@@ -225,7 +287,7 @@ const Sidebar = ({
                 Logout
               </Button>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

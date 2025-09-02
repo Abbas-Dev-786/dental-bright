@@ -91,13 +91,13 @@ const TodaySchedule = ({
                         <h3 className="font-medium text-foreground">
                           {appointment?.patientName}
                         </h3>
-                        <span
+                        {/* <span
                           className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
                             appointment?.status
                           )}`}
                         >
                           {appointment?.status}
-                        </span>
+                        </span> */}
                       </div>
 
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
@@ -109,12 +109,12 @@ const TodaySchedule = ({
                           <Icon name="Phone" size={14} />
                           <span>{appointment?.phone}</span>
                         </div>
-                        <div className="flex items-center space-x-1">
+                        {/* <div className="flex items-center space-x-1">
                           <Icon name="Activity" size={14} />
                           <span className="capitalize">
                             {appointment?.type}
                           </span>
-                        </div>
+                        </div> */}
                       </div>
 
                       {appointment?.notes && (
