@@ -88,7 +88,7 @@ const TimeSlotPicker = ({
     if (selectedDate) {
       loadAvailableSlots();
     }
-  }, [selectedDate, appointmentType]);
+  }, [selectedDate, appointmentType, data]);
 
   const loadAvailableSlots = async () => {
     setIsLoading(true);

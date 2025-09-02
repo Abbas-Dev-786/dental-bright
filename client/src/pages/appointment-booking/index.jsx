@@ -11,8 +11,19 @@ import BookingSummary from "./components/BookingSummary";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getSingleDentists } from "services/dentist.service";
 import { createBooking } from "services/booking.service";
-import { toZonedTime } from "date-fns-tz";
-import { addMinutes, parse, setHours, setMinutes } from "date-fns";
+import { format } from "date-fns";
+
+const toUTCISOStringWithoutShift = (dateStr, timeStr) => {
+  const [year, month, day] = dateStr.split("-").map(Number); // YYYY-MM-DD
+  let [hours, minutes] = timeStr.split(":").map(Number);
+
+  // Create a date at midnight UTC
+  const utcDate = new Date(
+    Date.UTC(year, month - 1, day, hours, minutes, 0, 0)
+  );
+
+  return utcDate.toISOString();
+};
 
 const AppointmentBooking = () => {
   const { id } = useParams();
@@ -122,25 +133,23 @@ const AppointmentBooking = () => {
   const handleContinue = async () => {
     if (!isFormValid()) return;
 
+    const bookingDate = format(new Date(selectedDate), "yyyy-MM-dd");
+
     const [hours, minutes] = selectedTime.split(":").map(Number);
 
     // set hours and minutes
-    let startTime = setHours(selectedDate, hours);
-    startTime = setMinutes(startTime, minutes);
-
-    // add 30 minutes for appointment duration
-    const endTime = addMinutes(startTime, 30);
-
-    // Convert to UTC if needed
-    const startUtc = toZonedTime(startTime, "UTC").toISOString();
-    const endUtc = toZonedTime(endTime, "UTC").toISOString();
+    let startTime = toUTCISOStringWithoutShift(bookingDate, selectedTime);
+    const endTime = toUTCISOStringWithoutShift(
+      bookingDate,
+      minutes == 30 ? `${hours + 1}:00` : `${hours}:30`
+    );
 
     bookAppointment({
       name: patientInfo?.firstName + " " + patientInfo?.lastName,
       phone: patientInfo?.phone,
       email: patientInfo?.email,
-      startDate: startUtc,
-      endDate: endUtc,
+      startDate: startTime,
+      endDate: endTime,
       notes,
       dentistId: id,
     });
