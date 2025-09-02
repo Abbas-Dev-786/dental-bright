@@ -6,7 +6,6 @@ import { format } from "date-fns/format";
 
 export const getBookedAppointmentsOfTheDay = async ({ queryKey }) => {
   const { date, dentistId } = queryKey[1];
-  console.log("I am running", date);
 
   const formattedDate = format(date, "yyyy-MM-dd");
   const startOfDay = new Date(`${formattedDate}T00:00:00.000Z`).toISOString();
@@ -17,8 +16,6 @@ export const getBookedAppointmentsOfTheDay = async ({ queryKey }) => {
     Query.lessThanEqual("end_date", endOfDay),
     Query.equal("dentistId", dentistId),
   ]);
-
-  console.log(data);
 
   return data;
 };

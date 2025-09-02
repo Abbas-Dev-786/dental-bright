@@ -32,7 +32,16 @@ const TimeSlotPicker = ({
     queryKey: ["booked-slots", { date: selectedDate, dentistId: id }],
     queryFn: getBookedAppointmentsOfTheDay,
     enabled: Boolean(selectedDate) && Boolean(id),
-    select: (data) => data.documents,
+    select: (data) =>
+      data.documents?.map((slot) => {
+        const startTime = new Date(slot.start_date);
+
+        return (
+          String(startTime.getUTCHours()).padStart(2, "0") +
+          ":" +
+          String(startTime.getUTCMinutes()).padStart(2, "0")
+        );
+      }),
   });
 
   const generateTimeSlots = () => {
@@ -53,22 +62,13 @@ const TimeSlotPicker = ({
     const endTime = parseTime(end);
 
     while (current < endTime) {
+      const currentTime = current.toTimeString().slice(0, 5);
       slots.push({
-        time: current.toTimeString().split(" ")[0].slice(0, 5),
-        available: true,
+        time: currentTime, // HH:MM 24-hour
+        available: !Boolean(data?.includes(currentTime)),
         duration: 30,
       });
       current.setMinutes(current.getMinutes() + 30);
-    }
-
-    // classify them into morning, afternoon, and evening slots
-    while (current < endTime) {
-      slots.push({
-        time: current.toTimeString().slice(0, 5), // HH:MM 24-hour
-        available: true,
-        duration: 30,
-      });
-      current = new Date(current.getTime() + 30 * 60 * 1000); // add 30 mins
     }
 
     const morningSlots = slots.filter((slot) => slot.time < "12:00");
