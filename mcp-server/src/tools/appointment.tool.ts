@@ -11,12 +11,12 @@ import {
   getPatientByNameAndPhone,
 } from "../services/user.service";
 import {
+  cancelAppointment,
   createAppointment,
   getAppointmentsOfDay,
+  updateAppointment,
 } from "../services/appointment.service";
 import { searchDentist } from "../services/dentist.service";
-import { databases } from "../config/appwrite.config";
-import { APPOINTMENTS_COLLECTION, DB_ID } from "../config/constants";
 
 config();
 
@@ -156,106 +156,324 @@ export const appointmentTools: AppointmentToolDefinition[] = [
   },
   {
     name: "rescheduleAppointment",
-    description: "Reschedule an existing appointment",
+    description: "Reschedule an existing appointment for a patient",
     inputSchema: {
-      appointmentId: z
-        .string()
-        .describe("The ID of the appointment to reschedule"),
-      newDate: z
+      dentistName: z
         .string()
         .describe(
-          "The new date of the appointment. It should be a valid date."
+          "The name of the dentist whose appointment is to be rescheduled"
         ),
-      newTime: z
+      patientName: z
         .string()
         .describe(
-          "The new time of the appointment. It should be a valid time in HH:MM format."
+          "The name of the patient whose appointment is to be rescheduled"
         ),
-      notes: z
+      patientPhone: z.string().describe("The phone number of the patient"),
+      oldAppointmentDate: z
         .string()
-        .optional()
-        .describe("Additional notes for the appointment"),
+        .describe("The current date of the appointment"),
+      oldAppointmentTime: z
+        .string()
+        .describe("The current time of the appointment"),
+      newAppointmentDate: z
+        .string()
+        .describe("The new date for the appointment"),
+      newAppointmentTime: z
+        .string()
+        .describe("The new time for the appointment"),
     },
     async callback(params, extra) {
-      const { appointmentId, newDate, newTime, notes } = params;
+      const {
+        patientName,
+        patientPhone,
+        dentistName,
+        newAppointmentDate,
+        newAppointmentTime,
+        oldAppointmentDate,
+        oldAppointmentTime,
+      } = params;
 
-      try {
-        // 1. Find the existing appointment
-        const appointmentQuery = await databases.getDocument(
-          DB_ID!,
-          APPOINTMENTS_COLLECTION!,
-          appointmentId
-        );
-
-        if (!appointmentQuery) {
-          return {
-            content: [
-              {
-                type: "text" as const,
-                text: `No appointment found with ID ${appointmentId}.`,
-              },
-            ],
-            isError: true,
-          };
-        }
-
-        // 2. Check for conflicts with existing appointments
-        const newStart = dayjs(`${newDate} ${newTime}`, "YYYY-MM-DD HH:mm");
-        const newEnd = newStart.add(30, "minutes");
-
-        const sameDayAppointments = await getAppointmentsOfDay(
-          newStart,
-          newEnd,
-          appointmentQuery.dentistId
-        );
-
-        if (sameDayAppointments.total > 0) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: `⚠️ Appointment conflict: Another appointment already exists between ${newStart.format(
-                  "HH:mm"
-                )} and ${newEnd.format("HH:mm")}.`,
-              },
-            ],
-            isError: true,
-          };
-        }
-
-        // 3. Update the appointment
-        const updatedAppointment = await databases.updateDocument(
-          DB_ID!,
-          APPOINTMENTS_COLLECTION!,
-          appointmentId,
-          {
-            start_date: newStart.toISOString(),
-            end_date: newEnd.toISOString(),
-            notes,
-          }
-        );
-
+      // check date is not older than today
+      if (dayjs(newAppointmentDate).isBefore(dayjs(), "day")) {
         return {
           content: [
             {
               type: "text" as const,
-              text: JSON.stringify(updatedAppointment, null, 2),
-            },
-          ],
-        };
-      } catch (error) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Error fetching dentists: ${
-                error instanceof Error ? error.message : "Unknown error"
-              }`,
+              text: "Error: New appointment date cannot be in the past.",
             },
           ],
           isError: true,
         };
       }
+
+      if (dayjs(oldAppointmentDate).isBefore(dayjs(), "day")) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: "Error: Appointment in the past cannot be rescheduled.",
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // get doctor by name
+      const dentists = await searchDentist(dentistName);
+
+      if (dentists.documents.length === 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No dentist found with the name ${dentistName}.`,
+            },
+          ],
+        };
+      }
+
+      const dentistId = dentists.documents[0].$id;
+
+      // get patient by name
+      const patients = await getPatientByNameAndPhone(
+        patientName,
+        patientPhone
+      );
+
+      if (patients.documents.length == 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No patient found with the name ${patientName} and phone ${patientPhone}.`,
+            },
+          ],
+        };
+      }
+
+      const patientId = patients.documents[0].$id;
+
+      // get appointment by patientId and doctorId
+      const newStart = dayjs(
+        `${oldAppointmentDate} ${oldAppointmentTime}`,
+        "YYYY-MM-DD HH:mm"
+      );
+      const newEnd = newStart.add(30, "minutes");
+
+      // 1. Query appointments on that day
+      const sameDayAppointments = await getAppointmentsOfDay(
+        newStart,
+        newEnd,
+        dentistId
+      );
+
+      if (sameDayAppointments.total == 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No existing appointment found for ${patientName} with ${dentistName} on ${oldAppointmentDate} at ${oldAppointmentTime}.`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      const checkUserAppointment = sameDayAppointments.documents.find(
+        (appt) => appt?.users?.$id === patientId
+      );
+
+      if (!checkUserAppointment) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No existing appointment found for ${patientName} with ${dentistName} on ${oldAppointmentDate} at ${oldAppointmentTime}.`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // check if new slot is available
+      // get appointment by patientId and doctorId
+      const newAStart = dayjs(
+        `${newAppointmentDate} ${newAppointmentTime}`,
+        "YYYY-MM-DD HH:mm"
+      );
+      const newAEnd = newStart.add(30, "minutes");
+
+      // 1. Query appointments on that day
+      const sameDayAppointmentsNew = await getAppointmentsOfDay(
+        newAStart,
+        newAEnd,
+        dentistId
+      );
+
+      if (sameDayAppointmentsNew.total > 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Appointment conflict: Another appointment already exists between ${newAStart.format(
+                "HH:mm"
+              )} and ${newAEnd.format("HH:mm")}.`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // if available, update appointment
+      const updatedAppointment = await updateAppointment(
+        checkUserAppointment.$id,
+        newAStart,
+        newAEnd
+      );
+
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text:
+              "Your Appointment is rescheduled successfully." +
+              JSON.stringify(updatedAppointment, null, 2),
+          },
+        ],
+      };
+    },
+  },
+  {
+    name: "cancelAppointment",
+    description: "Cancel an existing appointment for a patient",
+    inputSchema: {
+      dentistName: z
+        .string()
+        .describe(
+          "The name of the dentist whose appointment is to be rescheduled"
+        ),
+      patientName: z
+        .string()
+        .describe(
+          "The name of the patient whose appointment is to be rescheduled"
+        ),
+      patientPhone: z.string().describe("The phone number of the patient"),
+      appointmentDate: z.string().describe("The date of the appointment"),
+      appointmentTime: z.string().describe("The time of the appointment"),
+    },
+    async callback(params, extra) {
+      const {
+        dentistName,
+        patientName,
+        patientPhone,
+        appointmentDate,
+        appointmentTime,
+      } = params;
+      // check date is not older than today
+      if (dayjs(appointmentDate).isBefore(dayjs(), "day")) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: "Error: appointment date cannot be in the past.",
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // get dentist by name
+      const dentists = await searchDentist(dentistName);
+
+      if (dentists.documents.length === 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No dentist found with the name ${dentistName}.`,
+            },
+          ],
+        };
+      }
+
+      const dentistId = dentists.documents[0].$id;
+
+      // get patient by name
+      const patients = await getPatientByNameAndPhone(
+        patientName,
+        patientPhone
+      );
+
+      if (patients.documents.length == 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No patient found with the name ${patientName} and phone ${patientPhone}.`,
+            },
+          ],
+        };
+      }
+
+      const patientId = patients.documents[0].$id;
+
+      // check appointment exists for that patient with that doctor at that time
+      // get appointment by patientId and doctorId
+      const newStart = dayjs(
+        `${appointmentDate} ${appointmentTime}`,
+        "YYYY-MM-DD HH:mm"
+      );
+      const newEnd = newStart.add(30, "minutes");
+
+      // 1. Query appointments on that day
+      const sameDayAppointments = await getAppointmentsOfDay(
+        newStart,
+        newEnd,
+        dentistId
+      );
+
+      if (sameDayAppointments.total == 0) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No existing appointment found for ${patientName} with ${dentistName} on ${appointmentDate} at ${appointmentTime}.`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      const checkUserAppointment = sameDayAppointments.documents.find(
+        (appt) => appt?.users?.$id === patientId
+      );
+
+      if (!checkUserAppointment) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: `No existing appointment found for ${patientName} with ${dentistName} on ${appointmentDate} at ${appointmentTime}.`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      const cancelledAppointment = await cancelAppointment(
+        checkUserAppointment.$id
+      );
+
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text:
+              "your Appointment is cancelled successfully." +
+              JSON.stringify(cancelledAppointment, null, 2),
+          },
+        ],
+      };
     },
   },
 ];
