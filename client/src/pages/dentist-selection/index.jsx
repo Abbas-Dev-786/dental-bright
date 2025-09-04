@@ -101,7 +101,7 @@ const DentistSelection = () => {
   };
 
   const customBreadcrumbs = [
-    { label: "Home", path: "/landing-page", icon: "Home" },
+    { label: "Home", path: "/", icon: "Home" },
     { label: "Book Appointment", path: "/dentist-selection", icon: "Calendar" },
     {
       label: "Select Dentist",

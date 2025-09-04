@@ -81,7 +81,7 @@ const LoginForm = ({ selectedRole, onRoleChange }) => {
         if (selectedRole === "dentist") {
           navigate("/dentist-dashboard");
         } else {
-          navigate("/landing-page");
+          navigate("/");
         }
       } else {
         setErrors({

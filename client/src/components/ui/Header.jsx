@@ -24,7 +24,7 @@ const Header = ({ isAuthenticated = false, userRole = null, onLogout }) => {
 
   // Public navigation items
   const publicNavItems = [
-    { label: "Home", path: "/landing-page", icon: "Home" },
+    { label: "Home", path: "/", icon: "Home" },
     { label: "Find Dentist", path: "/dentist-selection", icon: "Search" },
     { label: "Call me", path: "/call-me", icon: "Phone" },
     // {

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 // Navigation Context
 const NavigationContext = createContext();
@@ -7,7 +7,7 @@ const NavigationContext = createContext();
 export const useNavigation = () => {
   const context = useContext(NavigationContext);
   if (!context) {
-    throw new Error('useNavigation must be used within a NavigationProvider');
+    throw new Error("useNavigation must be used within a NavigationProvider");
   }
   return context;
 };
@@ -16,33 +16,47 @@ export const useNavigation = () => {
 export const NavigationProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
-  const [navigationContext, setNavigationContext] = useState('public');
+  const [navigationContext, setNavigationContext] = useState("public");
   const location = useLocation();
 
   // Determine navigation context based on authentication and current path
   useEffect(() => {
-    const bookingFlowPaths = ['/dentist-selection', '/appointment-booking', '/appointment-confirmation'];
-    const dentistPaths = ['/dentist-dashboard', '/availability-management', '/appointments', '/patients', '/treatments', '/reports'];
-    const publicPaths = ['/landing-page', '/', '/about', '/contact', '/login'];
+    const bookingFlowPaths = [
+      "/dentist-selection",
+      "/appointment-booking",
+      "/appointment-confirmation",
+    ];
+    const dentistPaths = [
+      "/dentist-dashboard",
+      "/availability-management",
+      "/appointments",
+      "/patients",
+      "/treatments",
+      "/reports",
+    ];
+    const publicPaths = ["/", "/", "/about", "/contact", "/login"];
 
     if (!isAuthenticated) {
       if (bookingFlowPaths?.includes(location?.pathname)) {
-        setNavigationContext('booking');
+        setNavigationContext("booking");
       } else {
-        setNavigationContext('public');
+        setNavigationContext("public");
       }
     } else {
-      if (userRole === 'dentist' && dentistPaths?.some(path => location?.pathname?.startsWith(path))) {
-        setNavigationContext('dentist');
+      if (
+        userRole === "dentist" &&
+        dentistPaths?.some((path) => location?.pathname?.startsWith(path))
+      ) {
+        setNavigationContext("dentist");
       } else if (bookingFlowPaths?.includes(location?.pathname)) {
-        setNavigationContext('booking');
+        setNavigationContext("booking");
       } else {
-        setNavigationContext('authenticated');
+        setNavigationContext("authenticated");
       }
     }
   }, [isAuthenticated, userRole, location?.pathname]);
 
-  const login = (role = 'patient') => {
+  const login = (role = "patient") => {
     setIsAuthenticated(true);
     setUserRole(role);
   };
@@ -50,7 +64,7 @@ export const NavigationProvider = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false);
     setUserRole(null);
-    setNavigationContext('public');
+    setNavigationContext("public");
   };
 
   const value = {
@@ -59,7 +73,7 @@ export const NavigationProvider = ({ children }) => {
     navigationContext,
     login,
     logout,
-    setUserRole
+    setUserRole,
   };
 
   return (
@@ -75,8 +89,16 @@ const RoleBasedNavGuard = ({ children, requiredRole, fallbackComponent }) => {
   const location = useLocation();
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/landing-page', '/', '/about', '/contact', '/login', '/dentist-selection', '/appointment-booking'];
-  
+  const publicRoutes = [
+    "/",
+    "/",
+    "/about",
+    "/contact",
+    "/login",
+    "/dentist-selection",
+    "/appointment-booking",
+  ];
+
   // Check if current route is public
   const isPublicRoute = publicRoutes?.includes(location?.pathname);
 
@@ -92,7 +114,11 @@ const RoleBasedNavGuard = ({ children, requiredRole, fallbackComponent }) => {
 
   // If specific role is required but user doesn't have it
   if (requiredRole && userRole !== requiredRole) {
-    return fallbackComponent || <div>You don't have permission to access this page.</div>;
+    return (
+      fallbackComponent || (
+        <div>You don't have permission to access this page.</div>
+      )
+    );
   }
 
   return children;
@@ -105,40 +131,40 @@ export const useNavigationContext = () => {
 
   const getNavigationProps = () => {
     switch (navigationContext) {
-      case 'public':
+      case "public":
         return {
           showPublicNav: true,
           showBookingProgress: false,
           showSidebar: false,
-          showBreadcrumbs: false
+          showBreadcrumbs: false,
         };
-      case 'booking':
+      case "booking":
         return {
           showPublicNav: false,
           showBookingProgress: true,
           showSidebar: false,
-          showBreadcrumbs: true
+          showBreadcrumbs: true,
         };
-      case 'dentist':
+      case "dentist":
         return {
           showPublicNav: false,
           showBookingProgress: false,
           showSidebar: true,
-          showBreadcrumbs: true
+          showBreadcrumbs: true,
         };
-      case 'authenticated':
+      case "authenticated":
         return {
           showPublicNav: true,
           showBookingProgress: false,
           showSidebar: false,
-          showBreadcrumbs: true
+          showBreadcrumbs: true,
         };
       default:
         return {
           showPublicNav: true,
           showBookingProgress: false,
           showSidebar: false,
-          showBreadcrumbs: false
+          showBreadcrumbs: false,
         };
     }
   };
@@ -148,7 +174,7 @@ export const useNavigationContext = () => {
     isAuthenticated,
     userRole,
     currentPath: location?.pathname,
-    ...getNavigationProps()
+    ...getNavigationProps(),
   };
 };
 

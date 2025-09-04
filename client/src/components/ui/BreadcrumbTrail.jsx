@@ -8,7 +8,7 @@ const BreadcrumbTrail = ({ customBreadcrumbs }) => {
   // Default breadcrumb mapping
   const defaultBreadcrumbMap = {
     "/": { label: "Home", icon: "Home" },
-    "/landing-page": { label: "Home", icon: "Home" },
+    "/": { label: "Home", icon: "Home" },
     "/dentist-selection": { label: "Find Dentist", icon: "Search" },
     "/appointment-booking": { label: "Book Appointment", icon: "Calendar" },
     "/appointment-confirmation": { label: "Confirmation", icon: "CheckCircle" },

@@ -47,10 +47,7 @@ const FooterSection = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
             {/* Brand Section */}
             <div className="lg:col-span-2">
-              <Link
-                to="/landing-page"
-                className="flex items-center space-x-2 mb-6"
-              >
+              <Link to="/" className="flex items-center space-x-2 mb-6">
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Icon name="Stethoscope" size={20} color="white" />
                 </div>

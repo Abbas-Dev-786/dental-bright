@@ -184,7 +184,7 @@ const AppointmentBooking = () => {
 
   // Custom breadcrumbs
   const customBreadcrumbs = [
-    { label: "Home", path: "/landing-page", icon: "Home" },
+    { label: "Home", path: "/", icon: "Home" },
     { label: "Find Dentist", path: "/dentist-selection", icon: "Search" },
     {
       label: "Book Appointment",
