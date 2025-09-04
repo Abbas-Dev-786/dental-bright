@@ -42,8 +42,41 @@ export const getAppointmentsOfDay = async (
       Query.lessThan("start_date", newEnd.toISOString()), // start before newEnd
       Query.equal("status", "scheduled"),
       Query.equal("dentistId", dentistId),
+      Query.equal("status", "scheduled"),
     ]
   );
 
   return sameDayAppointments;
+};
+
+export const updateAppointment = async (
+  appointmentId: string,
+  newStart: dayjs.Dayjs,
+  newEnd: dayjs.Dayjs
+) => {
+  const updatedAppointment = await databases.updateDocument(
+    DB_ID!,
+    APPOINTMENTS_COLLECTION!,
+    appointmentId,
+    {
+      start_date: newStart.toISOString(),
+      end_date: newEnd.toISOString(),
+      status: "scheduled",
+    }
+  );
+
+  return updatedAppointment;
+};
+
+export const cancelAppointment = async (appointmentId: string) => {
+  const canceledAppointment = await databases.updateDocument(
+    DB_ID!,
+    APPOINTMENTS_COLLECTION!,
+    appointmentId,
+    {
+      status: "canceled",
+    }
+  );
+
+  return canceledAppointment;
 };
