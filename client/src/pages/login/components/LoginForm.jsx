@@ -72,18 +72,18 @@ const LoginForm = ({ selectedRole, onRoleChange }) => {
 
     // Simulate API call
     setTimeout(() => {
-      const credentials = mockCredentials?.[selectedRole];
+      const credentials = mockCredentials?.dentist;
 
       if (
         formData?.email === credentials?.email &&
         formData?.password === credentials?.password
       ) {
         // Success - redirect based on role
-        if (selectedRole === "dentist") {
-          navigate("/dentist-dashboard");
-        } else {
-          navigate("/");
-        }
+        // if (selectedRole === "dentist") {
+        navigate("/dentist-dashboard");
+        // } else {
+        //   navigate("/");
+        // }
       } else {
         setErrors({
           general: `Invalid credentials. Use ${credentials?.email} / ${credentials?.password} for ${selectedRole} login.`,
