@@ -163,13 +163,8 @@ const Header = ({ isAuthenticated = false, userRole = null, onLogout }) => {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link to="/login">
-                  <Button variant="ghost" size="sm">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/appointment-booking">
                   <Button variant="default" size="sm">
-                    Book Now
+                    Login
                   </Button>
                 </Link>
               </div>

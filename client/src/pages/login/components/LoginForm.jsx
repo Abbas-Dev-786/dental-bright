@@ -4,11 +4,22 @@ import Button from "../../../components/ui/Button";
 import Input from "../../../components/ui/Input";
 import Icon from "../../../components/AppIcon";
 
+const mockCredentials = {
+  patient: {
+    email: "patient@dentalbook.com",
+    password: "patient123",
+  },
+  dentist: {
+    email: "dentist@dentalbright.com",
+    password: "dentist123",
+  },
+};
+
 const LoginForm = ({ selectedRole, onRoleChange }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    email: mockCredentials.dentist.email,
+    password: mockCredentials.dentist.password,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -16,16 +27,6 @@ const LoginForm = ({ selectedRole, onRoleChange }) => {
   const [errors, setErrors] = useState({});
 
   // Mock credentials for different roles
-  const mockCredentials = {
-    patient: {
-      email: "patient@dentalbook.com",
-      password: "patient123",
-    },
-    dentist: {
-      email: "dentist@dentalbook.com",
-      password: "dentist123",
-    },
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e?.target;

@@ -10,3 +10,7 @@ body {
   font-family: inherit;
   margin: unset;
 }
+
+a {
+  cursor: pointer !important;
+}

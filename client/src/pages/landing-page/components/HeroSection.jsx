@@ -1,13 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "../../../components/ui/Button";
 import Image from "../../../components/AppImage";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative bg-gradient-to-br from-slate-50 to-white py-20 lg:py-32 overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-5 z-[-1]">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 right-10 w-40 h-40 bg-accent rounded-full blur-3xl"></div>
       </div>
@@ -28,18 +30,22 @@ const HeroSection = () => {
               our premium booking platform.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link to="/dentist-selection">
-                <Button size="lg" className="w-full sm:w-auto">
-                  Book Appointment Now
-                </Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start cursor-pointer">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto cursor-pointer"
+                asChild
+                // onClick={() => navigate("/dentist-selection")}
+              >
+                <Link to="/dentist-selection">Book Appointment Now</Link>
+              </Button>
               <Button
                 size="lg"
                 variant="secondary"
                 className="w-full sm:w-auto"
+                asChild
               >
-                Call Now
+                <Link to="/call-me">Call Now</Link>
               </Button>
             </div>
 
