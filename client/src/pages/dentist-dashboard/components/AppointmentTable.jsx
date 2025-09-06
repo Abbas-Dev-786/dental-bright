@@ -34,23 +34,26 @@ const AppointmentTable = ({
     }
   };
 
+  console.log("appointments data", appointments);
   const filteredAppointments = appointments
     ?.filter((apt) => {
-      const matchesStatus =
-        filterStatus === "all" || apt?.status === filterStatus;
+      // const matchesStatus =
+      //   filterStatus === "all" || apt?.status === filterStatus;
       const matchesSearch =
-        apt?.patientName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+        apt?.users?.full_name
+          ?.toLowerCase()
+          ?.includes(searchTerm?.toLowerCase()) ||
         apt?.phone?.includes(searchTerm) ||
         apt?.type?.toLowerCase()?.includes(searchTerm?.toLowerCase());
-      return matchesStatus && matchesSearch;
+      return matchesSearch;
     })
     ?.sort((a, b) => {
       let aValue = a?.[sortField];
       let bValue = b?.[sortField];
 
       if (sortField === "date") {
-        aValue = new Date(a.date + " " + a.time);
-        bValue = new Date(b.date + " " + b.time);
+        aValue = new Date(a.start_date);
+        bValue = new Date(b.start_date);
       }
 
       if (sortDirection === "asc") {
@@ -126,17 +129,17 @@ const AppointmentTable = ({
               className="w-full sm:w-64"
             />
 
-            <Select
+            {/* <Select
               options={statusOptions}
               value={filterStatus}
               onChange={setFilterStatus}
               placeholder="Filter by status"
               className="w-full sm:w-48"
-            />
+            /> */}
           </div>
         </div>
 
-        {selectedAppointments?.length > 0 && (
+        {/* {selectedAppointments?.length > 0 && (
           <div className="mt-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
             <div className="flex items-center justify-between">
               <span className="text-sm text-primary font-medium">
@@ -157,13 +160,13 @@ const AppointmentTable = ({
               </div>
             </div>
           </div>
-        )}
+        )} */}
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-muted/30">
             <tr>
-              <th className="px-6 py-3 text-left">
+              {/* <th className="px-6 py-3 text-left">
                 <input
                   type="checkbox"
                   checked={
@@ -174,15 +177,12 @@ const AppointmentTable = ({
                   onChange={(e) => handleSelectAll(e?.target?.checked)}
                   className="rounded border-border"
                 />
-              </th>
+              </th> */}
               <th className="px-6 py-3 text-left">
                 <SortButton field="date">Date & Time</SortButton>
               </th>
               <th className="px-6 py-3 text-left">
                 <SortButton field="patientName">Patient</SortButton>
-              </th>
-              <th className="px-6 py-3 text-left">
-                <SortButton field="type">Type</SortButton>
               </th>
               <th className="px-6 py-3 text-left">
                 <SortButton field="duration">Duration</SortButton>
@@ -195,81 +195,79 @@ const AppointmentTable = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filteredAppointments?.map((appointment) => (
-              <tr
-                key={appointment?.id}
-                className="hover:bg-muted/30 transition-colors duration-200"
-              >
-                <td className="px-6 py-4">
-                  <input
-                    type="checkbox"
-                    checked={selectedAppointments?.includes(appointment?.id)}
-                    onChange={(e) =>
-                      handleSelectAppointment(
-                        appointment?.id,
-                        e?.target?.checked
-                      )
-                    }
-                    className="rounded border-border"
-                  />
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-foreground">
-                      {appointment?.date}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
-                      {appointment?.time}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <button
-                      onClick={() => onViewPatient(appointment?.patientId)}
-                      className="font-medium text-primary hover:text-primary/80 text-left transition-colors duration-200"
-                    >
-                      {appointment?.patientName}
-                    </button>
-                    <span className="text-sm text-muted-foreground">
-                      {appointment?.phone}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="capitalize text-foreground">
-                    {appointment?.type}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className="text-foreground">
-                    {appointment?.duration}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                      appointment?.status
-                    )}`}
-                  >
-                    {appointment?.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="max-w-32">
-                    {appointment?.notes ? (
-                      <p
-                        className="text-sm text-muted-foreground truncate"
-                        title={appointment?.notes}
+            {filteredAppointments?.map((appointment) => {
+              const startTime = new Date(appointment.start_date);
+
+              return (
+                <tr
+                  key={appointment?.$id}
+                  className="hover:bg-muted/30 transition-colors duration-200"
+                >
+                  {/* <td className="px-6 py-4">
+                    <input
+                      type="checkbox"
+                      checked={selectedAppointments?.includes(appointment?.$id)}
+                      onChange={(e) =>
+                        handleSelectAppointment(
+                          appointment?.$id,
+                          e?.target?.checked
+                        )
+                      }
+                      className="rounded border-border"
+                    />
+                  </td> */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <span className="font-medium text-foreground">
+                        {startTime.toDateString()}
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        {String(startTime.getUTCHours()).padStart(2, "0") +
+                          ":" +
+                          String(startTime.getUTCMinutes()).padStart(2, "0")}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <button
+                        onClick={() => onViewPatient(appointment?.$id)}
+                        className="font-medium text-primary hover:text-primary/80 text-left transition-colors duration-200"
                       >
-                        {appointment?.notes}
-                      </p>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">-</span>
-                    )}
-                  </div>
-                </td>
-                {/* <td className="px-6 py-4">
+                        {appointment?.users?.full_name}
+                      </button>
+                      <span className="text-sm text-muted-foreground">
+                        {appointment?.users?.phone}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-foreground">30 Minutes</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                        appointment?.status
+                      )}`}
+                    >
+                      {appointment?.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="max-w-32">
+                      {appointment?.notes ? (
+                        <p
+                          className="text-sm text-muted-foreground truncate"
+                          title={appointment?.notes}
+                        >
+                          {appointment?.notes}
+                        </p>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">-</span>
+                      )}
+                    </div>
+                  </td>
+                  {/* <td className="px-6 py-4">
                   <div className="flex items-center justify-end space-x-2">
                     {appointment?.status === 'pending' && (
                       <Button
@@ -300,8 +298,9 @@ const AppointmentTable = ({
                     />
                   </div>
                 </td> */}
-              </tr>
-            ))}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

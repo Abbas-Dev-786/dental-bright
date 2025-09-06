@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import Button from '../../../components/ui/Button';
+import Button from "../../../components/ui/Button";
 
 const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const getDaysInMonth = (date) => {
@@ -19,12 +29,14 @@ const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
   };
 
   const getAppointmentsForDate = (date) => {
-    const dateString = date?.toISOString()?.split('T')?.[0];
-    return appointments?.filter(apt => apt?.date === dateString);
+    const dateString = date?.toISOString()?.split("T")?.[0];
+    return appointments?.filter(
+      (apt) => apt?.start_date?.split("T")?.[0] === dateString
+    );
   };
 
   const navigateMonth = (direction) => {
-    setCurrentMonth(prev => {
+    setCurrentMonth((prev) => {
       const newMonth = new Date(prev);
       newMonth?.setMonth(prev?.getMonth() + direction);
       return newMonth;
@@ -49,13 +61,20 @@ const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
     // Empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
       days?.push(
-        <div key={`empty-${i}`} className="h-24 border border-border bg-muted/20"></div>
+        <div
+          key={`empty-${i}`}
+          className="h-24 border border-border bg-muted/20"
+        ></div>
       );
     }
 
     // Days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+      const date = new Date(
+        currentMonth.getFullYear(),
+        currentMonth.getMonth(),
+        day
+      );
       const dayAppointments = getAppointmentsForDate(date);
       const isCurrentDay = isToday(date);
       const isSelectedDay = isSelected(date);
@@ -65,13 +84,15 @@ const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
           key={day}
           onClick={() => onDateSelect(date)}
           className={`h-24 border border-border p-2 cursor-pointer transition-colors duration-200 hover:bg-muted/50 ${
-            isCurrentDay ? 'bg-primary/10 border-primary/30' : 'bg-background'
-          } ${isSelectedDay ? 'ring-2 ring-primary' : ''}`}
+            isCurrentDay ? "bg-primary/10 border-primary/30" : "bg-background"
+          } ${isSelectedDay ? "ring-2 ring-primary" : ""}`}
         >
           <div className="flex items-center justify-between mb-1">
-            <span className={`text-sm font-medium ${
-              isCurrentDay ? 'text-primary' : 'text-foreground'
-            }`}>
+            <span
+              className={`text-sm font-medium ${
+                isCurrentDay ? "text-primary" : "text-foreground"
+              }`}
+            >
               {day}
             </span>
             {dayAppointments?.length > 0 && (
@@ -80,17 +101,24 @@ const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
               </span>
             )}
           </div>
-          
+
           <div className="space-y-1">
-            {dayAppointments?.slice(0, 2)?.map((apt, index) => (
-              <div
-                key={index}
-                className="text-xs p-1 rounded bg-primary/20 text-primary truncate"
-                title={`${apt?.time} - ${apt?.patientName}`}
-              >
-                {apt?.time} {apt?.patientName}
-              </div>
-            ))}
+            {dayAppointments?.slice(0, 2)?.map((apt, index) => {
+              const startTime = new Date(apt?.start_date);
+
+              return (
+                <div
+                  key={index}
+                  className="text-xs p-1 rounded bg-primary/20 text-primary truncate"
+                  title={`${apt?.time} - ${apt?.users?.full_name}`}
+                >
+                  {String(startTime.getUTCHours()).padStart(2, "0") +
+                    ":" +
+                    String(startTime.getUTCMinutes()).padStart(2, "0")}{" "}
+                  {apt?.users?.full_name}
+                </div>
+              );
+            })}
             {dayAppointments?.length > 2 && (
               <div className="text-xs text-muted-foreground">
                 +{dayAppointments?.length - 2} more
@@ -108,7 +136,9 @@ const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
     <div className="bg-card border border-border rounded-lg shadow-card">
       <div className="p-6 border-b border-border">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-foreground">Calendar View</h2>
+          <h2 className="text-xl font-semibold text-foreground">
+            Calendar View
+          </h2>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <Button
@@ -119,7 +149,8 @@ const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
                 iconSize={16}
               />
               <span className="text-lg font-medium text-foreground min-w-48 text-center">
-                {monthNames?.[currentMonth?.getMonth()]} {currentMonth?.getFullYear()}
+                {monthNames?.[currentMonth?.getMonth()]}{" "}
+                {currentMonth?.getFullYear()}
               </span>
               <Button
                 variant="ghost"
@@ -144,8 +175,11 @@ const CalendarView = ({ appointments, onDateSelect, selectedDate }) => {
       <div className="p-6">
         {/* Calendar Header */}
         <div className="grid grid-cols-7 gap-0 mb-2">
-          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']?.map(day => (
-            <div key={day} className="p-2 text-center text-sm font-medium text-muted-foreground">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]?.map((day) => (
+            <div
+              key={day}
+              className="p-2 text-center text-sm font-medium text-muted-foreground"
+            >
               {day}
             </div>
           ))}

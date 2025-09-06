@@ -10,7 +10,10 @@ import CalendarView from "./components/CalendarView";
 import NotificationCenter from "./components/NotificationCenter";
 import PatientModal from "./components/PatientModal";
 import Button from "../../components/ui/Button";
-import { getBookedAppointmentsOfTheDay } from "services/appointment.service";
+import {
+  getAllAppointments,
+  getBookedAppointmentsOfTheDay,
+} from "services/appointment.service";
 import { useQuery } from "@tanstack/react-query";
 
 // Mock data for today's appointments
@@ -168,6 +171,7 @@ const DentistDashboard = () => {
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [activeView, setActiveView] = useState("overview");
   const [todayAppointments, setTodayAppointments] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]);
 
   // Event handlers
   const handleConfirmAppointment = (appointmentId) => {
@@ -218,6 +222,24 @@ const DentistDashboard = () => {
         });
 
         setTodayAppointments(data?.documents || []);
+      } catch (error) {
+        console.error("Error setting default doctor:", error);
+      }
+    }
+
+    if (!selectedDoctor?.$id) return;
+
+    fetchDoctors();
+  }, [selectedDoctor]);
+
+  useEffect(() => {
+    async function fetchDoctors() {
+      try {
+        const data = await getAllAppointments({
+          queryKey: ["booked-slots", { dentistId: selectedDoctor?.$id }],
+        });
+
+        setAllAppointments(data?.documents || []);
       } catch (error) {
         console.error("Error setting default doctor:", error);
       }

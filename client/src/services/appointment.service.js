@@ -20,3 +20,14 @@ export const getBookedAppointmentsOfTheDay = async ({ queryKey }) => {
 
   return data;
 };
+
+export const getAllAppointments = async ({ queryKey }) => {
+  const { dentistId } = queryKey[1];
+
+  const data = await databases.listDocuments(DB_ID, APPOINTMENTS_COLLECTION, [
+    Query.equal("dentistId", dentistId),
+    Query.select(["*", "users.*"]),
+  ]);
+
+  return data;
+};
