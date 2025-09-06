@@ -34,7 +34,6 @@ const AppointmentTable = ({
     }
   };
 
-  console.log("appointments data", appointments);
   const filteredAppointments = appointments
     ?.filter((apt) => {
       // const matchesStatus =
