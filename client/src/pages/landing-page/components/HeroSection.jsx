@@ -45,22 +45,22 @@ const HeroSection = () => {
                 className="w-full sm:w-auto"
                 asChild
               >
-                <Link to="/call-me">Call Now</Link>
+                <Link to="/call-me">Call Me</Link>
               </Button>
             </div>
 
             {/* Trust Indicators */}
             <div className="mt-12 pt-8 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-4">
+              {/* <p className="text-sm text-muted-foreground mb-4">
                 Trusted by 10,000+ patients
-              </p>
-              {/* <div className="flex items-center justify-center lg:justify-start space-x-8">
+              </p> */}
+              <div className="flex items-center justify-center lg:justify-start space-x-8">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-success rounded-full flex items-center justify-center">
                     <span className="text-white text-xs font-bold">✓</span>
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    HIPAA Compliant
+                    Call Now on +18668847201
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -68,10 +68,10 @@ const HeroSection = () => {
                     <span className="text-white text-xs font-bold">✓</span>
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    SSL Secured
+                    Trusted by 10,000+ patients
                   </span>
                 </div>
-              </div> */}
+              </div>
             </div>
           </div>
 
