@@ -1,27 +1,14 @@
 import React from "react";
 import Icon from "../../../components/AppIcon";
-import Button from "../../../components/ui/Button";
 
 const TodaySchedule = ({
   appointments,
+  selectedDoctor,
   onConfirm,
   onReschedule,
   onCancel,
   onAddNotes,
 }) => {
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "confirmed":
-        return "bg-success/10 text-success border-success/20";
-      case "pending":
-        return "bg-warning/10 text-warning border-warning/20";
-      case "cancelled":
-        return "bg-error/10 text-error border-error/20";
-      default:
-        return "bg-muted/10 text-muted-foreground border-muted/20";
-    }
-  };
-
   const getTypeIcon = (type) => {
     switch (type) {
       case "cleaning":
@@ -71,61 +58,74 @@ const TodaySchedule = ({
           </div>
         ) : (
           <div className="space-y-4">
-            {appointments?.map((appointment) => (
-              <div
-                key={appointment?.id}
-                className="border border-border rounded-lg p-4 hover:shadow-card transition-shadow duration-200"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4 flex-1">
-                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                      <Icon
-                        name={getTypeIcon(appointment?.type)}
-                        size={20}
-                        className="text-primary"
-                      />
-                    </div>
+            {appointments?.map((appointment) => {
+              const startTime = new Date(appointment.start_date);
 
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="font-medium text-foreground">
-                          {appointment?.patientName}
-                        </h3>
-                        {/* <span
+              return (
+                <div
+                  key={appointment?.$id}
+                  className="border border-border rounded-lg p-4 hover:shadow-card transition-shadow duration-200"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-4 flex-1">
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                        <Icon
+                          name={getTypeIcon(appointment?.type || "other")}
+                          size={20}
+                          className="text-primary"
+                        />
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h3 className="font-medium text-foreground">
+                            {appointment?.users?.full_name}
+                          </h3>
+                          {/* <span
                           className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
                             appointment?.status
                           )}`}
                         >
                           {appointment?.status}
                         </span> */}
-                      </div>
+                        </div>
 
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
-                        <div className="flex items-center space-x-1">
-                          <Icon name="Clock" size={14} />
-                          <span>{appointment?.time}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Icon name="Phone" size={14} />
-                          <span>{appointment?.phone}</span>
-                        </div>
-                        {/* <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-2">
+                          <div className="flex items-center space-x-1">
+                            <Icon name="Clock" size={14} />
+                            <span>
+                              {String(startTime.getUTCHours()).padStart(
+                                2,
+                                "0"
+                              ) +
+                                ":" +
+                                String(startTime.getUTCMinutes()).padStart(
+                                  2,
+                                  "0"
+                                )}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Icon name="Phone" size={14} />
+                            <span>{appointment?.users?.phone}</span>
+                          </div>
+                          {/* <div className="flex items-center space-x-1">
                           <Icon name="Activity" size={14} />
                           <span className="capitalize">
                             {appointment?.type}
                           </span>
                         </div> */}
+                        </div>
+
+                        {appointment?.notes && (
+                          <p className="text-sm text-muted-foreground bg-muted/50 rounded p-2 mt-2">
+                            {appointment?.notes}
+                          </p>
+                        )}
                       </div>
-
-                      {appointment?.notes && (
-                        <p className="text-sm text-muted-foreground bg-muted/50 rounded p-2 mt-2">
-                          {appointment?.notes}
-                        </p>
-                      )}
                     </div>
-                  </div>
 
-                  {/* <div className="flex items-center space-x-2 ml-4">
+                    {/* <div className="flex items-center space-x-2 ml-4">
                     {appointment?.status === 'pending' && (
                       <Button
                         variant="outline"
@@ -169,9 +169,10 @@ const TodaySchedule = ({
                       Cancel
                     </Button>
                   </div> */}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

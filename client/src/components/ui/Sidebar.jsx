@@ -9,6 +9,8 @@ const Sidebar = ({
   isCollapsed = false,
   onToggleCollapse,
   userRole = "dentist",
+  selectedDoctor,
+  setSelectedDoctor,
 }) => {
   const location = useLocation();
 
@@ -132,7 +134,7 @@ const Sidebar = ({
       return data.documents;
     },
   });
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  // const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -203,58 +205,52 @@ const Sidebar = ({
           {/* <div className="my-6 mx-4 border-t border-border" /> */}
 
           {/* Secondary Navigation */}
-          <div className="space-y-1">
-            {secondaryNavItems?.filter(Boolean)?.map((item) => (
-              <NavItem
-                key={item?.path || item?.label}
-                item={item}
-                isSecondary
-              />
-            ))}
+          <div className="space-y-1 mt-12">
+            <div
+              className={`flex flex-col ${isCollapsed ? "items-center" : ""}`}
+            >
+              <div className="relative w-full">
+                <button
+                  type="button"
+                  className={`flex items-center justify-between w-full px-3 py-2 bg-muted rounded-md text-sm font-medium text-foreground focus:outline-none ${
+                    isCollapsed ? "justify-center" : ""
+                  }`}
+                  onClick={() => setDropdownOpen((open) => !open)}
+                >
+                  <span>{selectedDoctor?.name || "Select Doctor"}</span>
+                  <Icon
+                    name={dropdownOpen ? "ChevronUp" : "ChevronDown"}
+                    size={16}
+                  />
+                </button>
+                {dropdownOpen && (
+                  <div className="absolute left-0 right-0 mt-1 bg-card border border-border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
+                    {doctors?.map((doc) => (
+                      <button
+                        key={doc.$id}
+                        type="button"
+                        className={`w-full text-left px-3 py-2 text-sm hover:bg-muted ${
+                          selectedDoctor?.$id === doc.$id
+                            ? "bg-primary text-primary-foreground"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedDoctor(doc);
+                          setDropdownOpen(false);
+                        }}
+                      >
+                        {doc.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </nav>
 
         {/* Doctor Dropdown */}
         <div className="border-t border-border p-4">
-          <div className={`flex flex-col ${isCollapsed ? "items-center" : ""}`}>
-            <div className="relative w-full">
-              <button
-                type="button"
-                className={`flex items-center justify-between w-full px-3 py-2 bg-muted rounded-md text-sm font-medium text-foreground focus:outline-none ${
-                  isCollapsed ? "justify-center" : ""
-                }`}
-                onClick={() => setDropdownOpen((open) => !open)}
-              >
-                <span>{selectedDoctor?.name || "Select Doctor"}</span>
-                <Icon
-                  name={dropdownOpen ? "ChevronUp" : "ChevronDown"}
-                  size={16}
-                />
-              </button>
-              {dropdownOpen && (
-                <div className="absolute left-0 right-0 mt-1 bg-card border border-border rounded-md shadow-lg z-10 max-h-60 overflow-y-auto">
-                  {doctors?.map((doc) => (
-                    <button
-                      key={doc.$id}
-                      type="button"
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-muted ${
-                        selectedDoctor?.$id === doc.$id
-                          ? "bg-primary text-primary-foreground"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        setSelectedDoctor(doc);
-                        setDropdownOpen(false);
-                      }}
-                    >
-                      {doc.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
           {/* User Profile */}
           <div
             className={`flex items-center space-x-3 mt-4 ${

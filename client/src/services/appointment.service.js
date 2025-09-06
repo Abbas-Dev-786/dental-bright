@@ -15,6 +15,7 @@ export const getBookedAppointmentsOfTheDay = async ({ queryKey }) => {
     Query.greaterThanEqual("start_date", startOfDay),
     Query.lessThanEqual("end_date", endOfDay),
     Query.equal("dentistId", dentistId),
+    Query.select(["*", "users.*"]),
   ]);
 
   return data;

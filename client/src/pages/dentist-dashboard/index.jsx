@@ -10,160 +10,164 @@ import CalendarView from "./components/CalendarView";
 import NotificationCenter from "./components/NotificationCenter";
 import PatientModal from "./components/PatientModal";
 import Button from "../../components/ui/Button";
+import { getBookedAppointmentsOfTheDay } from "services/appointment.service";
+import { useQuery } from "@tanstack/react-query";
+
+// Mock data for today's appointments
+const todayAppointments = [
+  {
+    id: 1,
+    patientName: "Sarah Johnson",
+    patientId: "P001",
+    phone: "(555) 123-4567",
+    time: "9:00 AM",
+    type: "cleaning",
+    status: "confirmed",
+    notes:
+      "Regular cleaning and checkup. Patient has been experiencing slight sensitivity.",
+  },
+  {
+    id: 2,
+    patientName: "Michael Chen",
+    patientId: "P002",
+    phone: "(555) 234-5678",
+    time: "10:30 AM",
+    type: "checkup",
+    status: "pending",
+    notes: "Follow-up appointment for cavity treatment.",
+  },
+  {
+    id: 3,
+    patientName: "Emily Rodriguez",
+    patientId: "P003",
+    phone: "(555) 345-6789",
+    time: "2:00 PM",
+    type: "filling",
+    status: "confirmed",
+    notes: "Composite filling for upper left molar.",
+  },
+  {
+    id: 4,
+    patientName: "David Wilson",
+    patientId: "P004",
+    phone: "(555) 456-7890",
+    time: "3:30 PM",
+    type: "extraction",
+    status: "pending",
+    notes: "Wisdom tooth extraction. Patient is anxious about the procedure.",
+  },
+];
+
+// Mock data for all appointments
+const allAppointments = [
+  ...todayAppointments?.map((apt) => ({
+    ...apt,
+    date: new Date()?.toISOString()?.split("T")?.[0],
+  })),
+  {
+    id: 5,
+    patientName: "Lisa Thompson",
+    patientId: "P005",
+    phone: "(555) 567-8901",
+    date: "2025-08-28",
+    time: "9:00 AM",
+    type: "cleaning",
+    status: "confirmed",
+    duration: "60 min",
+    notes: "Regular cleaning appointment",
+  },
+  {
+    id: 6,
+    patientName: "Robert Brown",
+    patientId: "P006",
+    phone: "(555) 678-9012",
+    date: "2025-08-28",
+    time: "11:00 AM",
+    type: "checkup",
+    status: "pending",
+    duration: "30 min",
+    notes: "Annual checkup",
+  },
+  {
+    id: 7,
+    patientName: "Jennifer Davis",
+    patientId: "P007",
+    phone: "(555) 789-0123",
+    date: "2025-08-29",
+    time: "10:00 AM",
+    type: "filling",
+    status: "confirmed",
+    duration: "45 min",
+    notes: "Cavity filling on lower right side",
+  },
+];
+
+// Mock patient data
+const patients = {
+  P001: {
+    id: "P001",
+    name: "Sarah Johnson",
+    phone: "(555) 123-4567",
+    email: "sarah.johnson@email.com",
+    address: "123 Main St, Anytown, ST 12345",
+    age: 32,
+    bloodType: "O+",
+    allergies: ["Penicillin"],
+    emergencyContact: {
+      name: "John Johnson",
+      phone: "(555) 123-4568",
+    },
+    visitHistory: [
+      {
+        id: 1,
+        date: "2025-02-15",
+        treatment: "Regular Cleaning",
+        status: "completed",
+        duration: "60 min",
+        cost: "150",
+        notes: "No issues found. Recommended regular flossing.",
+      },
+      {
+        id: 2,
+        date: "2024-08-20",
+        treatment: "Cavity Filling",
+        status: "completed",
+        duration: "45 min",
+        cost: "200",
+        notes: "Composite filling on upper right molar.",
+      },
+    ],
+    treatments: [
+      {
+        id: 1,
+        name: "Orthodontic Treatment",
+        description: "Braces for teeth alignment",
+        status: "in-progress",
+        startDate: "2025-01-15",
+        endDate: null,
+      },
+    ],
+    notes: [
+      {
+        id: 1,
+        date: "2025-08-27",
+        author: "Sarah Smith",
+        content:
+          "Patient reports sensitivity to cold. Recommended sensitive toothpaste.",
+      },
+    ],
+  },
+};
 
 const DentistDashboard = () => {
   const navigate = useNavigate();
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showPatientModal, setShowPatientModal] = useState(false);
   const [activeView, setActiveView] = useState("overview");
-
-  // Mock data for today's appointments
-  const todayAppointments = [
-    {
-      id: 1,
-      patientName: "Sarah Johnson",
-      patientId: "P001",
-      phone: "(555) 123-4567",
-      time: "9:00 AM",
-      type: "cleaning",
-      status: "confirmed",
-      notes:
-        "Regular cleaning and checkup. Patient has been experiencing slight sensitivity.",
-    },
-    {
-      id: 2,
-      patientName: "Michael Chen",
-      patientId: "P002",
-      phone: "(555) 234-5678",
-      time: "10:30 AM",
-      type: "checkup",
-      status: "pending",
-      notes: "Follow-up appointment for cavity treatment.",
-    },
-    {
-      id: 3,
-      patientName: "Emily Rodriguez",
-      patientId: "P003",
-      phone: "(555) 345-6789",
-      time: "2:00 PM",
-      type: "filling",
-      status: "confirmed",
-      notes: "Composite filling for upper left molar.",
-    },
-    {
-      id: 4,
-      patientName: "David Wilson",
-      patientId: "P004",
-      phone: "(555) 456-7890",
-      time: "3:30 PM",
-      type: "extraction",
-      status: "pending",
-      notes: "Wisdom tooth extraction. Patient is anxious about the procedure.",
-    },
-  ];
-
-  // Mock data for all appointments
-  const allAppointments = [
-    ...todayAppointments?.map((apt) => ({
-      ...apt,
-      date: new Date()?.toISOString()?.split("T")?.[0],
-    })),
-    {
-      id: 5,
-      patientName: "Lisa Thompson",
-      patientId: "P005",
-      phone: "(555) 567-8901",
-      date: "2025-08-28",
-      time: "9:00 AM",
-      type: "cleaning",
-      status: "confirmed",
-      duration: "60 min",
-      notes: "Regular cleaning appointment",
-    },
-    {
-      id: 6,
-      patientName: "Robert Brown",
-      patientId: "P006",
-      phone: "(555) 678-9012",
-      date: "2025-08-28",
-      time: "11:00 AM",
-      type: "checkup",
-      status: "pending",
-      duration: "30 min",
-      notes: "Annual checkup",
-    },
-    {
-      id: 7,
-      patientName: "Jennifer Davis",
-      patientId: "P007",
-      phone: "(555) 789-0123",
-      date: "2025-08-29",
-      time: "10:00 AM",
-      type: "filling",
-      status: "confirmed",
-      duration: "45 min",
-      notes: "Cavity filling on lower right side",
-    },
-  ];
-
-  // Mock patient data
-  const patients = {
-    P001: {
-      id: "P001",
-      name: "Sarah Johnson",
-      phone: "(555) 123-4567",
-      email: "sarah.johnson@email.com",
-      address: "123 Main St, Anytown, ST 12345",
-      age: 32,
-      bloodType: "O+",
-      allergies: ["Penicillin"],
-      emergencyContact: {
-        name: "John Johnson",
-        phone: "(555) 123-4568",
-      },
-      visitHistory: [
-        {
-          id: 1,
-          date: "2025-02-15",
-          treatment: "Regular Cleaning",
-          status: "completed",
-          duration: "60 min",
-          cost: "150",
-          notes: "No issues found. Recommended regular flossing.",
-        },
-        {
-          id: 2,
-          date: "2024-08-20",
-          treatment: "Cavity Filling",
-          status: "completed",
-          duration: "45 min",
-          cost: "200",
-          notes: "Composite filling on upper right molar.",
-        },
-      ],
-      treatments: [
-        {
-          id: 1,
-          name: "Orthodontic Treatment",
-          description: "Braces for teeth alignment",
-          status: "in-progress",
-          startDate: "2025-01-15",
-          endDate: null,
-        },
-      ],
-      notes: [
-        {
-          id: 1,
-          date: "2025-08-27",
-          author: "Sarah Smith",
-          content:
-            "Patient reports sensitivity to cold. Recommended sensitive toothpaste.",
-        },
-      ],
-    },
-  };
+  const [todayAppointments, setTodayAppointments] = useState([]);
 
   // Event handlers
   const handleConfirmAppointment = (appointmentId) => {
@@ -199,28 +203,40 @@ const DentistDashboard = () => {
     navigate("/appointment-booking", { state: { patientId } });
   };
 
-  const handleMarkNotificationAsRead = (notificationId) => {
-    console.log("Marking notification as read:", notificationId);
-    // Implementation would update notification status
-  };
-
-  const handleMarkAllNotificationsAsRead = () => {
-    console.log("Marking all notifications as read");
-    // Implementation would update all notification statuses
-  };
-
-  const handleNotificationAction = (notificationId, action) => {
-    console.log("Notification action:", notificationId, action);
-    // Implementation would handle specific notification actions
-  };
-
-  const handleLogout = () => {
-    navigate("/login");
-  };
-
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
+
+  useEffect(() => {
+    async function fetchDoctors() {
+      try {
+        const data = await getBookedAppointmentsOfTheDay({
+          queryKey: [
+            "booked-slots",
+            { date: new Date(), dentistId: selectedDoctor?.$id },
+          ],
+        });
+
+        setTodayAppointments(data?.documents || []);
+      } catch (error) {
+        console.error("Error setting default doctor:", error);
+      }
+    }
+
+    if (!selectedDoctor?.$id) return;
+
+    fetchDoctors();
+  }, [selectedDoctor]);
+
+  // const { data, error } = useQuery({
+  //   queryKey: [
+  //     "booked-slots",
+  //     { date: new Date(), dentistId: selectedDoctor?.$id },
+  //   ],
+  //   queryFn: getBookedAppointmentsOfTheDay,
+  //   enabled: Boolean(selectedDoctor?.$id),
+  // });
+  // console.log("booked slots data", data, error);
 
   return (
     <div className="min-h-screen bg-background">
@@ -236,6 +252,8 @@ const DentistDashboard = () => {
           isCollapsed={sidebarCollapsed}
           onToggleCollapse={toggleSidebar}
           userRole="dentist"
+          selectedDoctor={selectedDoctor}
+          setSelectedDoctor={setSelectedDoctor}
         />
 
         {/* Main Content */}
@@ -309,6 +327,7 @@ const DentistDashboard = () => {
                 {/* Today's Schedule */}
                 <TodaySchedule
                   appointments={todayAppointments}
+                  selectedDoctor={selectedDoctor}
                   onConfirm={handleConfirmAppointment}
                   onReschedule={handleRescheduleAppointment}
                   onCancel={handleCancelAppointment}
